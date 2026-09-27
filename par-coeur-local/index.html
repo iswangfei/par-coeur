@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Par Cœur</title>
+<meta name="theme-color" content="#F3F4F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10132A" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Par Cœur">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="fonts/fonts.css">
+<script src="vendor/diff_match_patch.js"></script>
+<style>
+:root{
+  --paper:#F3F4F0; --sheet:#FFFFFF; --ink:#1D2757; --ink-2:#48507C; --muted:#7B809A;
+  --rule:#DCE2F1; --rule-strong:#C3CCE6; --margin:#E7A19C; --line:#E2E4EC;
+  --accent:#2B3FA0; --accent-ink:#FFFFFF; --accent-soft:#E6E9F7;
+  --err:#C4302A; --err-bg:#FBE3E0; --ok:#1F6E4C; --ok-bg:#DDF0E6; --warn:#A5620B; --warn-bg:#FBEBD3;
+  --heat0:#E6E8EF; --heat1:#C7CEEB; --heat2:#8D9BDB; --heat3:#4A5DC0; --heat4:#24358F;
+  --serif:"Literata","Songti SC","Noto Serif CJK SC","Hiragino Mincho ProN",Georgia,serif;
+  --sans:"Figtree","PingFang SC","Hiragino Sans","Noto Sans CJK SC",system-ui,-apple-system,sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#10132A; --sheet:#171B35; --ink:#E5E8F7; --ink-2:#B6BCDD; --muted:#868CAD;
+    --rule:#232948; --rule-strong:#2E3560; --margin:#6E3438; --line:#262B4A;
+    --accent:#93A4FF; --accent-ink:#10132A; --accent-soft:#232A55;
+    --err:#FF7B70; --err-bg:#3B1C22; --ok:#6FD4A2; --ok-bg:#15332A; --warn:#F2B25C; --warn-bg:#3A2A14;
+    --heat0:#1E2342; --heat1:#2C3570; --heat2:#44529E; --heat3:#6D80E0; --heat4:#A8B5FF;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#10132A; --sheet:#171B35; --ink:#E5E8F7; --ink-2:#B6BCDD; --muted:#868CAD;
+  --rule:#232948; --rule-strong:#2E3560; --margin:#6E3438; --line:#262B4A;
+  --accent:#93A4FF; --accent-ink:#10132A; --accent-soft:#232A55;
+  --err:#FF7B70; --err-bg:#3B1C22; --ok:#6FD4A2; --ok-bg:#15332A; --warn:#F2B25C; --warn-bg:#3A2A14;
+  --heat0:#1E2342; --heat1:#2C3570; --heat2:#44529E; --heat3:#6D80E0; --heat4:#A8B5FF;
+}
+*{box-sizing:border-box}
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+html,body{background:var(--paper)}
+body{color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:980px;margin:0 auto;padding-inline:16px;display:flex;align-items:center;gap:12px;height:54px}
+.brand{font-family:var(--serif);font-style:italic;font-weight:600;font-size:20px;letter-spacing:-.01em;white-space:nowrap}
+.brand b{color:var(--err);font-style:normal}
+.tabs{display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.tab{border:0;background:none;padding:7px 11px;border-radius:8px;color:var(--ink-2);font-weight:500;cursor:pointer;white-space:nowrap}
+.tab[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.sync{font-size:12px;color:var(--muted);white-space:nowrap}
+.sync::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--muted);margin-right:5px;vertical-align:1px}
+.sync.on::before{background:var(--ok)}
+@media (max-width:620px){.sync{display:none}.brand{font-size:18px}.tab{padding:7px 9px}}
+
+main{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:20px 60px}
+h1,h2,h3{text-wrap:balance;margin:0}
+h1{font-family:var(--serif);font-weight:600;font-size:26px;letter-spacing:-.01em}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:14px}
+.spacer{flex:1}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--sheet);padding:8px 14px;border-radius:9px;cursor:pointer;font-weight:500;white-space:nowrap;min-height:38px}
+.btn:hover{border-color:var(--rule-strong)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:none;border-color:transparent;color:var(--ink-2)}
+.btn.danger{color:var(--err)}
+.btn.danger.armed{background:var(--err);color:#fff;border-color:var(--err)}
+.btn.sm{padding:5px 10px;min-height:32px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:default}
+
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;background:var(--sheet);padding:2px}
+.seg button{border:0;background:none;padding:5px 10px;border-radius:7px;cursor:pointer;color:var(--ink-2);font-size:13px;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+
+.chip{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:5px;background:var(--accent-soft);color:var(--accent)}
+.chip.due{background:var(--warn-bg);color:var(--warn)}
+.chip.sample{background:var(--ok-bg);color:var(--ok)}
+
+/* library */
+.lib-head{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.card h3{font-family:var(--serif);font-size:18px;font-weight:600;line-height:1.3;word-break:break-word}
+.card .ex{font-family:var(--serif);color:var(--ink-2);font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.card .row{margin-top:2px}
+.drop{border:1.5px dashed var(--rule-strong);border-radius:var(--r);padding:16px;text-align:center;color:var(--muted);font-size:13.5px}
+.drop.hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.section{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+
+/* editor */
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:13px;color:var(--ink-2);font-weight:500}
+.input,select.input,textarea.input{border:1px solid var(--line);background:var(--sheet);border-radius:9px;padding:9px 12px;width:100%}
+textarea.input{min-height:320px;font-family:var(--serif);font-size:16px;line-height:1.7;resize:vertical}
+
+/* practice sheet: Seyès ruling */
+.sheet{position:relative;background-color:var(--sheet);border:1px solid var(--line);border-radius:var(--r);
+  background-image:linear-gradient(to right,transparent 38px,var(--margin) 38px,var(--margin) 39.5px,transparent 39.5px),
+    repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-strong) 31px 32px),
+    repeating-linear-gradient(to bottom,transparent 0 7px,var(--rule) 7px 8px);
+  background-position:0 0,0 14px,0 14px;padding:14px 18px 20px 52px}
+@media (max-width:520px){.sheet{padding-left:30px;background-image:linear-gradient(to right,transparent 18px,var(--margin) 18px,var(--margin) 19.5px,transparent 19.5px),repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-strong) 31px 32px),repeating-linear-gradient(to bottom,transparent 0 7px,var(--rule) 7px 8px)}}
+.prose{font-family:var(--serif);font-size:17px;line-height:32px;white-space:pre-wrap;word-break:break-word}
+.blank-wrap{white-space:nowrap}
+.blank{font-family:var(--serif);font-size:17px;border:0;border-bottom:2px solid var(--accent);background:color-mix(in srgb,var(--accent-soft) 70%,transparent);border-radius:4px 4px 0 0;padding:0 3px;height:26px;vertical-align:baseline;text-align:center;outline:none;min-width:2.2ch}
+.blank:focus{background:var(--accent-soft);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}
+.blank.ok{border-bottom-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.blank.bad{border-bottom-color:var(--err);background:var(--err-bg);color:var(--err)}
+.blank.shown{border-bottom-color:var(--warn);background:var(--warn-bg);color:var(--warn)}
+.hintpre{color:var(--accent);font-weight:600}
+.pick{-webkit-user-select:none;user-select:none}
+.pw{cursor:pointer;border-radius:4px;padding:1px 1px;-webkit-tap-highlight-color:transparent}
+.pw:hover{background:var(--accent-soft)}
+.pw.on{background:var(--accent);color:var(--accent-ink)}
+.weak{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:4px 16px}
+.ws{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.ws:last-child{border-bottom:0}
+.ws input{margin-top:6px;accent-color:var(--accent);flex:none;width:17px;height:17px}
+.ws span.s{flex:1;font-family:var(--serif);font-size:15.5px;line-height:1.6}
+.ws span.n{color:var(--err);font-weight:700;font-size:12.5px;white-space:nowrap;margin-top:4px;font-variant-numeric:tabular-nums}
+.chip.smart{background:var(--err-bg);color:var(--err)}
+
+.pbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 55px);z-index:5;background:var(--paper);padding-block:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.progress{height:4px;background:var(--line);border-radius:2px;overflow:hidden;flex-basis:100%}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.count{font-variant-numeric:tabular-nums;font-size:13px;color:var(--ink-2);font-weight:600}
+.ptitle{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+
+.typearea{width:100%;min-height:220px;border:0;background:transparent;resize:vertical;font-family:var(--serif);font-size:17px;line-height:32px;outline:none;padding:0}
+.ref{font-family:var(--serif);font-size:16px;line-height:30px;white-space:pre-wrap;color:var(--ink-2);background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;max-height:40vh;overflow:auto}
+.ref .fl{color:var(--ink)}
+.ref .rest{color:var(--rule-strong);letter-spacing:.05em}
+.live{font-family:var(--serif);font-size:16px;line-height:30px;white-space:pre-wrap;word-break:break-word;background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px}
+.d-ins{color:var(--err);background:var(--err-bg);text-decoration:line-through;text-decoration-thickness:1px;border-radius:2px}
+.d-del{color:var(--err);border-bottom:2px solid var(--err);opacity:.9}
+.d-gap{display:inline-block;width:.5em;border-bottom:2px solid var(--err);margin:0 1px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+
+.result{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:14px}
+.big{font-family:var(--serif);font-size:44px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.big.good{color:var(--ok)} .big.mid{color:var(--warn)} .big.bad{color:var(--err)}
+.misslist{display:flex;flex-wrap:wrap;gap:6px}
+.misslist span{font-family:var(--serif);background:var(--err-bg);color:var(--err);padding:1px 8px;border-radius:5px}
+
+/* stats */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (max-width:640px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.tile b{display:block;font-family:var(--serif);font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.15}
+.tile span{font-size:12.5px;color:var(--muted)}
+.heat-wrap{overflow-x:auto;background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,13px);gap:3px;width:max-content}
+.heat i{width:13px;height:13px;border-radius:3px;background:var(--heat0)}
+.heat i.l1{background:var(--heat1)}.heat i.l2{background:var(--heat2)}.heat i.l3{background:var(--heat3)}.heat i.l4{background:var(--heat4)}
+.heat i.fut{background:transparent}
+.tbl-wrap{overflow-x:auto;background:var(--sheet);border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12px;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+td.t{white-space:normal;min-width:140px;font-family:var(--serif)}
+
+/* settings */
+.set{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r)}
+.set-row{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.set-row:last-child{border-bottom:0}
+.set-row .d{font-size:12.5px;color:var(--muted)}
+.switch{appearance:none;width:42px;height:24px;border-radius:12px;background:var(--line);position:relative;cursor:pointer;flex:none;transition:background .15s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.switch:checked{background:var(--accent)}
+.switch:checked::after{left:21px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:9px;font-size:14px;z-index:50;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand">Par C<b>œ</b>ur</div>
+  <span class="sync" id="sync"></span>
+  <nav class="tabs" id="tabs"></nav>
+</div></header>
+<main id="app"></main>
+<input type="file" id="filein" accept=".txt,.md,.markdown,.docx,.pdf,.csv,text/plain,application/pdf" multiple hidden>
+<input type="file" id="backupin" accept=".json,application/json" hidden>
+
+<script>
+"use strict";
+/* ---------- i18n ---------- */
+const I18N = {
+  zh:{lib:"书库",stats:"记录",settings:"设置",newText:"新建",importFile:"导入文件",dropHint:"把 .txt / .md / .docx / .pdf 文件拖到这里，或点“导入文件”",
+    due:"今日复习",allTexts:"全部文本",cloze:"挖空",full:"全文默写",edit:"编辑",chars:"字符",best:"最佳",never:"未练习",next:"下次",today:"今天",
+    sample:"示例",sampleNote:"这是一篇示例短文，练习后会自动存入书库。",title:"标题",language:"文本语言",content:"内容",save:"保存",cancel:"取消",del:"删除",confirmDel:"确认删除？",
+    back:"返回",ratio:"挖空比例",firstLetter:"首字母提示",hint:"提示",reveal:"看答案",reshuffle:"重新挖空",submit:"交卷",speak:"朗读",stop:"停止",
+    ref:"原文",hide:"隐藏",initials:"首字母",show:"显示",liveCheck:"实时标红",startTyping:"在这里默写全文…",
+    accuracy:"正确率",time:"用时",again:"再来一次",tryFull:"试试全文默写",missed:"出错的词",nomiss:"全部答对，太棒了。",
+    legendIns:"写错/多写",legendDel:"漏写",levelUp:"下次挖空比例会提高到",
+    streak:"连续天数",week:"本周分钟",sessions:"练习次数",dueCount:"待复习",activity:"最近 20 周",recent:"最近练习",perText:"每篇进度",hard:"常错词",
+    mode:"模式",when:"时间",attempts:"次数",noData:"还没有练习记录，先去书库练一篇吧。",
+    uiLang:"界面语言",ignoreCase:"忽略大小写",ignoreAccents:"忽略重音符号",ignoreAccentsD:"é = e，考试建议关闭",ignorePunct:"全文默写时忽略标点",
+    rate:"朗读语速",exportB:"导出备份",exportD:"下载全部文本和记录（JSON）",importB:"导入备份",importD:"从 JSON 备份恢复，会合并到现有数据",
+    cloud:"云端同步",local:"仅本设备",storage:"数据保存",cloudD:"文本和记录保存在云端，手机和电脑打开同一链接即可同步。",localD:"数据只保存在这台设备的这个浏览器里。请定期导出备份。",
+    saved:"已保存",deleted:"已删除",imported:"已导入 {n} 篇",saveFail:"保存失败，请稍后再试",emptyTitle:"未命名",needContent:"内容不能为空",
+    docxFail:"无法读取 .docx 文件",srsNote:"挖空 ≥60% 或全文默写才会推进复习计划。",later:"待定",min:"分钟",days:"天",restored:"备份已恢复",fileFail:"文件格式不对",manual:"手动挖空",pick:"选词",pickHint:"点单词把它挖空，再点一次取消。选好后点“开始练习”。",clear:"清空",startPractice:"开始练习",selected:"已选 {n} 个",needPick:"先选几个要挖空的词",pdfEmpty:"这个 PDF 里没有可提取的文字（可能是扫描件）",pdfFail:"无法读取这个 PDF",checkImport:"PDF 已导入，请检查文字后保存",smart:"智能挖空",smartD:"随机挖空时，优先挖掉你最近答错的词",weakHint:"含 {n} 个易错词",weakSent:"薄弱句子",weakNote:"勾选要练的句子，一键生成手动挖空。",blankMissed:"只挖错词",blankSent:"挖整句"},
+  en:{lib:"Library",stats:"Progress",settings:"Settings",newText:"New",importFile:"Import file",dropHint:"Drop .txt / .md / .docx / .pdf files here, or tap Import file",
+    due:"Due today",allTexts:"All texts",cloze:"Cloze",full:"Full recall",edit:"Edit",chars:"chars",best:"Best",never:"Not practised",next:"Next",today:"today",
+    sample:"Sample",sampleNote:"A sample text. Practising it saves it to your library.",title:"Title",language:"Text language",content:"Content",save:"Save",cancel:"Cancel",del:"Delete",confirmDel:"Really delete?",
+    back:"Back",ratio:"Blanks",firstLetter:"First-letter hint",hint:"Hint",reveal:"Show answer",reshuffle:"New blanks",submit:"Finish",speak:"Listen",stop:"Stop",
+    ref:"Reference",hide:"Hidden",initials:"Initials",show:"Visible",liveCheck:"Live marking",startTyping:"Type the whole text from memory…",
+    accuracy:"Accuracy",time:"Time",again:"Again",tryFull:"Try full recall",missed:"Words you missed",nomiss:"Every word right.",
+    legendIns:"wrong / extra",legendDel:"missing",levelUp:"Next time blanks go up to",
+    streak:"Day streak",week:"Minutes this week",sessions:"Sessions",dueCount:"Due",activity:"Last 20 weeks",recent:"Recent sessions",perText:"Per text",hard:"Hardest words",
+    mode:"Mode",when:"When",attempts:"Tries",noData:"No sessions yet. Practise a text from the library first.",
+    uiLang:"Interface language",ignoreCase:"Ignore case",ignoreAccents:"Ignore accents",ignoreAccentsD:"é = e. Keep off for exams.",ignorePunct:"Ignore punctuation in full recall",
+    rate:"Speech rate",exportB:"Export backup",exportD:"Download all texts and records (JSON)",importB:"Import backup",importD:"Restore from a JSON backup, merged with current data",
+    cloud:"Synced",local:"This device only",storage:"Storage",cloudD:"Texts and records are stored online. Open the same link on phone and computer.",localD:"Data lives only in this browser on this device. Export a backup regularly.",
+    saved:"Saved",deleted:"Deleted",imported:"Imported {n}",saveFail:"Couldn't save. Try again shortly.",emptyTitle:"Untitled",needContent:"Content can't be empty",
+    docxFail:"Couldn't read the .docx file",srsNote:"Only cloze ≥60% or full recall moves the review schedule.",later:"—",min:"min",days:"d",restored:"Backup restored",fileFail:"That file isn't a backup",manual:"Manual blanks",pick:"Pick words",pickHint:"Tap a word to blank it, tap again to undo. Then press Start.",clear:"Clear",startPractice:"Start",selected:"{n} selected",needPick:"Pick at least one word first",pdfEmpty:"This PDF has no extractable text (it may be a scan)",pdfFail:"Couldn't read this PDF",checkImport:"PDF imported. Check the text, then save.",smart:"Smart blanks",smartD:"Random blanks favour words you recently got wrong",weakHint:"{n} weak words",weakSent:"Weak sentences",weakNote:"Tick the sentences to drill and turn them into manual blanks.",blankMissed:"Blank missed words",blankSent:"Blank whole sentences"},
+  fr:{lib:"Bibliothèque",stats:"Progrès",settings:"Réglages",newText:"Nouveau",importFile:"Importer",dropHint:"Déposez des fichiers .txt / .md / .docx / .pdf ici",
+    due:"À réviser",allTexts:"Tous les textes",cloze:"Texte à trous",full:"Récitation",edit:"Modifier",chars:"car.",best:"Record",never:"Jamais pratiqué",next:"Prochaine",today:"aujourd'hui",
+    sample:"Exemple",sampleNote:"Texte d'exemple. Il sera ajouté à la bibliothèque dès que vous le pratiquez.",title:"Titre",language:"Langue du texte",content:"Contenu",save:"Enregistrer",cancel:"Annuler",del:"Supprimer",confirmDel:"Confirmer ?",
+    back:"Retour",ratio:"Trous",firstLetter:"Première lettre",hint:"Indice",reveal:"Réponse",reshuffle:"Nouveaux trous",submit:"Terminer",speak:"Écouter",stop:"Stop",
+    ref:"Texte",hide:"Caché",initials:"Initiales",show:"Visible",liveCheck:"Correction en direct",startTyping:"Récitez le texte de mémoire…",
+    accuracy:"Exactitude",time:"Durée",again:"Recommencer",tryFull:"Passer à la récitation",missed:"Mots manqués",nomiss:"Aucune faute.",
+    legendIns:"faux / en trop",legendDel:"oublié",levelUp:"Prochaine fois, trous à",
+    streak:"Jours d'affilée",week:"Minutes / semaine",sessions:"Séances",dueCount:"À réviser",activity:"20 dernières semaines",recent:"Séances récentes",perText:"Par texte",hard:"Mots difficiles",
+    mode:"Mode",when:"Date",attempts:"Essais",noData:"Aucune séance pour l'instant.",
+    uiLang:"Langue de l'interface",ignoreCase:"Ignorer la casse",ignoreAccents:"Ignorer les accents",ignoreAccentsD:"é = e. À désactiver pour l'examen.",ignorePunct:"Ignorer la ponctuation (récitation)",
+    rate:"Vitesse de lecture",exportB:"Exporter",exportD:"Télécharger textes et historique (JSON)",importB:"Importer une sauvegarde",importD:"Restaurer depuis un JSON",
+    cloud:"Synchronisé",local:"Cet appareil",storage:"Stockage",cloudD:"Données en ligne, synchronisées entre téléphone et ordinateur.",localD:"Données gardées dans ce navigateur seulement.",
+    saved:"Enregistré",deleted:"Supprimé",imported:"{n} importé(s)",saveFail:"Échec de l'enregistrement",emptyTitle:"Sans titre",needContent:"Le contenu est vide",
+    docxFail:"Lecture du .docx impossible",srsNote:"Seuls les trous ≥60 % ou la récitation font avancer les révisions.",later:"—",min:"min",days:"j",restored:"Sauvegarde restaurée",fileFail:"Fichier non reconnu",manual:"Trous choisis",pick:"Choisir les mots",pickHint:"Touchez un mot pour le masquer, touchez encore pour annuler.",clear:"Effacer",startPractice:"Commencer",selected:"{n} choisi(s)",needPick:"Choisissez au moins un mot",pdfEmpty:"Ce PDF ne contient pas de texte (scan ?)",pdfFail:"Lecture du PDF impossible",checkImport:"PDF importé. Vérifiez le texte puis enregistrez.",smart:"Trous intelligents",smartD:"Les trous aléatoires visent d'abord vos erreurs récentes",weakHint:"{n} mots fragiles",weakSent:"Phrases fragiles",weakNote:"Cochez les phrases à retravailler pour en faire un texte à trous.",blankMissed:"Masquer les mots ratés",blankSent:"Masquer les phrases"},
+  ja:{lib:"ライブラリ",stats:"記録",settings:"設定",newText:"新規",importFile:"ファイル読込",dropHint:".txt / .md / .docx / .pdf をここにドロップ",
+    due:"今日の復習",allTexts:"すべてのテキスト",cloze:"穴埋め",full:"全文暗唱",edit:"編集",chars:"文字",best:"最高",never:"未練習",next:"次回",today:"今日",
+    sample:"サンプル",sampleNote:"サンプル文です。練習するとライブラリに保存されます。",title:"タイトル",language:"テキストの言語",content:"本文",save:"保存",cancel:"キャンセル",del:"削除",confirmDel:"本当に削除？",
+    back:"戻る",ratio:"穴の割合",firstLetter:"頭文字ヒント",hint:"ヒント",reveal:"答え",reshuffle:"穴を作り直す",submit:"採点",speak:"読み上げ",stop:"停止",
+    ref:"原文",hide:"非表示",initials:"頭文字",show:"表示",liveCheck:"リアルタイム添削",startTyping:"覚えた全文を入力…",
+    accuracy:"正答率",time:"時間",again:"もう一度",tryFull:"全文暗唱へ",missed:"間違えた語",nomiss:"全問正解！",
+    legendIns:"誤り・余分",legendDel:"抜け",levelUp:"次回の穴の割合",
+    streak:"連続日数",week:"今週の分数",sessions:"練習回数",dueCount:"復習待ち",activity:"直近20週",recent:"最近の練習",perText:"テキスト別",hard:"よく間違える語",
+    mode:"モード",when:"日時",attempts:"回数",noData:"まだ記録がありません。",
+    uiLang:"表示言語",ignoreCase:"大文字小文字を無視",ignoreAccents:"アクセント記号を無視",ignoreAccentsD:"é = e（試験対策ではオフ推奨）",ignorePunct:"全文暗唱で句読点を無視",
+    rate:"読み上げ速度",exportB:"バックアップを書き出す",exportD:"全データを JSON で保存",importB:"バックアップを読み込む",importD:"JSON から復元（既存と統合）",
+    cloud:"同期中",local:"この端末のみ",storage:"保存先",cloudD:"クラウドに保存。スマホとPCで同じリンクを開けば同期。",localD:"このブラウザにのみ保存。",
+    saved:"保存しました",deleted:"削除しました",imported:"{n} 件読み込みました",saveFail:"保存に失敗しました",emptyTitle:"無題",needContent:"本文が空です",
+    docxFail:".docx を読み込めません",srsNote:"穴埋め60%以上か全文暗唱のみ復習計画に反映。",later:"—",min:"分",days:"日",restored:"復元しました",fileFail:"形式が違います",manual:"手動穴埋め",pick:"語を選ぶ",pickHint:"語をタップして穴にする。もう一度タップで解除。",clear:"クリア",startPractice:"開始",selected:"{n} 語選択",needPick:"語を1つ以上選んでください",pdfEmpty:"この PDF には文字データがありません（スキャン画像かも）",pdfFail:"PDF を読み込めません",checkImport:"PDF を読み込みました。確認して保存してください。",smart:"スマート穴埋め",smartD:"ランダム穴埋めで最近間違えた語を優先",weakHint:"苦手語 {n}",weakSent:"苦手な文",weakNote:"練習したい文にチェックして手動穴埋めにします。",blankMissed:"間違えた語だけ",blankSent:"文ごと穴埋め"}
+};
+const LANGS = {fr:"Français",en:"English",ja:"日本語",zh:"中文",de:"Deutsch",es:"Español",other:"Other"};
+const UILANGS = {zh:"中文",en:"English",fr:"Français",ja:"日本語"};
+
+/* ---------- helpers ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+function h(tag, attrs, ...kids){
+  const el = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs||{})){
+    if (v==null || v===false) continue;
+    if (k==="class") el.className = v;
+    else if (k==="text") el.textContent = v;
+    else if (k==="style") el.style.cssText = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k in el && typeof v !== "string") el[k] = v;
+    else el.setAttribute(k, v===true ? "" : v);
+  }
+  for (const c of kids.flat(3)){ if (c==null || c===false) continue; el.append(c.nodeType ? c : document.createTextNode(String(c))); }
+  return el;
+}
+const DAY = 864e5;
+const sod = (ms) => { const d = new Date(ms); d.setHours(0,0,0,0); return d.getTime(); };
+const dayKey = (ms) => { const d = new Date(ms); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+const monthKey = (ms) => dayKey(ms).slice(0,7);
+const uid = () => "t" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const pct = (x) => Math.round(x*100) + "%";
+const fmtSecs = (s) => { s = Math.round(s); const m = Math.floor(s/60); return m ? m+":"+String(s%60).padStart(2,"0") : s+"s"; };
+function fmtDate(ms){ try { return new Intl.DateTimeFormat(locale(), {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}).format(ms); } catch { return dayKey(ms); } }
+function fmtDue(ms){
+  if (!ms) return t("later");
+  const d = Math.round((sod(ms) - sod(Date.now()))/DAY);
+  if (d <= 0) return t("today");
+  return "+" + d + t("days");
+}
+let toastTimer;
+function toast(msg){
+  document.querySelectorAll(".toast").forEach(n=>n.remove());
+  const n = h("div",{class:"toast",role:"status",text:msg}); document.body.append(n);
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>n.remove(), 2200);
+}
+function lsGet(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function lsSet(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+
+/* ---------- state & storage ---------- */
+const DEFAULT_SETTINGS = {smart:true, ignoreCase:false, ignoreAccents:false, ignorePunct:true, rate:0.9};
+const state = { texts:new Map(), logs:new Map(), settings:{...DEFAULT_SETTINGS}, cloud:false };
+let uiLang = lsGet("pc.ui") || (()=>{ const n=(navigator.language||"zh").slice(0,2); return I18N[n] ? n : "zh"; })();
+const t = (k, vars) => { let s = (I18N[uiLang]||I18N.zh)[k] ?? I18N.zh[k] ?? k; if (vars) for (const [a,b] of Object.entries(vars)) s = s.replace("{"+a+"}", b); return s; };
+const locale = () => ({zh:"zh-CN",en:"en-GB",fr:"fr-FR",ja:"ja-JP"})[uiLang];
+
+let db = null;
+const LS_KEY = "pc.data.v1";
+function loadLocal(){
+  const d = lsGet(LS_KEY); if (!d) return;
+  (d.texts||[]).forEach(x => state.texts.set(x.id, x));
+  Object.entries(d.logs||{}).forEach(([k,v]) => state.logs.set(k, v));
+  Object.assign(state.settings, d.settings||{});
+}
+function saveLocal(){
+  if (db) return;
+  lsSet(LS_KEY, {texts:[...state.texts.values()], logs:Object.fromEntries(state.logs), settings:state.settings});
+}
+const chains = {};
+function queue(path, fn){
+  const p = (chains[path] || Promise.resolve()).then(fn).catch(e => { console.error(e); toast(e && e.code==="quota_exceeded" ? e.message : t("saveFail")); });
+  chains[path] = p; return p;
+}
+function putText(x){
+  x.updatedAt = Date.now(); state.texts.set(x.id, x);
+  if (db) return queue("texts/"+x.id, () => db.doc("texts/"+x.id).set(JSON.parse(JSON.stringify(x))));
+  saveLocal();
+}
+function removeText(id){
+  state.texts.delete(id);
+  if (db) return queue("texts/"+id, () => db.doc("texts/"+id).delete());
+  saveLocal();
+}
+function addLog(entry){
+  const mk = monthKey(entry.at);
+  const arr = [...(state.logs.get(mk)||[]), entry];
+  state.logs.set(mk, arr);
+  if (db) return queue("logs/"+mk, () => db.doc("logs/"+mk).set({entries:arr}));
+  saveLocal();
+}
+function putSettings(){
+  if (db) return queue("settings/main", () => db.doc("settings/main").set({...state.settings}));
+  saveLocal();
+}
+function allLogs(){ return [...state.logs.values()].flat().sort((a,b)=>b.at-a.at); }
+
+async function connectCloud(){ /* unused in the offline build */
+  const cl = window.claude;
+  if (!cl || typeof cl.use !== "function") return;
+  let d; try { d = await cl.use("db"); } catch { d = null; }
+  if (!d) return;
+  const local = { texts:[...state.texts.values()], logs:new Map(state.logs) };
+  db = d; state.cloud = true; updateSync();
+  let first = true;
+  db.collection("texts").onSnapshot(snap => {
+    const m = new Map();
+    snap.docs.forEach(doc => { const v = doc.data(); if (v) m.set(doc.id, JSON.parse(JSON.stringify(v))); });
+    state.texts = m;
+    if (first){
+      first = false;
+      // one-time move of anything created before the cloud connected
+      local.texts.filter(x => !m.has(x.id)).forEach(x => putText(x));
+      local.logs.forEach((arr, mk) => { if (!state.logs.has(mk)) { state.logs.set(mk, arr); queue("logs/"+mk, () => db.doc("logs/"+mk).set({entries:arr})); } });
+      try { localStorage.removeItem(LS_KEY); } catch {}
+    }
+    softRender();
+  }, e => console.error(e));
+  db.collection("logs").onSnapshot(snap => {
+    snap.docs.forEach(doc => { const v = doc.data(); if (v && Array.isArray(v.entries)) state.logs.set(doc.id, v.entries.map(x=>({...x}))); });
+    softRender();
+  }, e => console.error(e));
+  db.doc("settings/main").onSnapshot(s => {
+    if (s.exists) Object.assign(state.settings, s.data());
+    softRender();
+  }, e => console.error(e));
+}
+function updateSync(){
+  const s = $("#sync"); s.textContent = state.cloud ? t("cloud") : t("local"); s.classList.toggle("on", state.cloud);
+}
+
+/* ---------- text processing ---------- */
+function segment(text, lang){
+  const loc = lang && lang !== "other" ? lang : undefined;
+  if (typeof Intl !== "undefined" && Intl.Segmenter){
+    const seg = new Intl.Segmenter(loc, {granularity:"word"});
+    return Array.from(seg.segment(text), s => ({s:s.segment, w:!!s.isWordLike}));
+  }
+  return text.split(/([\p{L}\p{N}][\p{L}\p{M}\p{N}'’\-]*)/u).filter(Boolean).map(s => ({s, w:/^[\p{L}\p{N}]/u.test(s)}));
+}
+const graphemes = (s) => { try { return Array.from(new Intl.Segmenter(undefined,{granularity:"grapheme"}).segment(s), x=>x.segment); } catch { return Array.from(s); } };
+const isWide = (c) => /[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFF60\uFFE0-\uFFE6\u3000-\u30FF]/.test(c);
+const dispWidth = (s) => Array.from(s).reduce((n,c)=>n+(isWide(c)?2:1),0);
+
+function normChar(c){
+  let x = c;
+  if (/[’‘ʼ`´′]/.test(x)) x = "'";
+  else if (/[“”«»„]/.test(x)) x = '"';
+  else if (/[‐‑–—]/.test(x)) x = "-";
+  else if (/\s/.test(x)) x = " ";
+  if (state.settings.ignoreCase) x = x.toLowerCase();
+  if (state.settings.ignoreAccents) x = x.normalize("NFD").replace(/[\u0300-\u036f]/g,"").normalize("NFC");
+  if (state.settings.ignoreAccents){ x = x.replace(/œ/g,"oe").replace(/Œ/g,"OE").replace(/æ/g,"ae"); }
+  return x;
+}
+const normWord = (s) => Array.from(s.normalize("NFC").trim()).map(normChar).join("").replace(/ +/g," ");
+
+// normalized string + index map back to the original, for full recall diffing
+function normMapped(src, dropPunct){
+  const out = [], map = [];
+  const chars = Array.from(src.normalize("NFC"));
+  let prevSpace = true;
+  chars.forEach((c, i) => {
+    if (dropPunct && /[\p{P}\p{S}]/u.test(c) && !/['’-]/.test(c)) return;
+    let n = normChar(c);
+    if (n === " "){ if (prevSpace) return; prevSpace = true; }
+    else prevSpace = false;
+    for (const ch of Array.from(n)){ out.push(ch); map.push(i); }
+  });
+  while (out.length && out[out.length-1] === " "){ out.pop(); map.pop(); }
+  return {s:out.join(""), map, chars};
+}
+
+// segments with code-point offsets, matching the indices normMapped() uses
+function spans(text, lang, gran){
+  let segs;
+  if (gran === "sentence"){
+    try { segs = Array.from(new Intl.Segmenter(lang && lang !== "other" ? lang : undefined, {granularity:"sentence"}).segment(text), k => ({s:k.segment})); }
+    catch { segs = text.split(/(?<=[.!?。！？…]["»”）)]*\s*)/).filter(Boolean).map(s => ({s})); }
+  } else segs = segment(text, lang);
+  let off = 0;
+  return segs.map(k => { const L = Array.from(k.s).length, o = {...k, start:off, end:off+L}; off += L; return o; });
+}
+// recent misses for one text, newer sessions weighing more
+function missWeights(x){
+  const m = new Map();
+  allLogs().filter(l => l.id === x.id).slice(0, 10).forEach((l, i) =>
+    (l.miss||[]).forEach(w => { const k = normWord(w); m.set(k, (m.get(k)||0) + (1 - i*0.07)); }));
+  return m;
+}
+
+function guessLang(s){
+  if (/[\u3040-\u30ff]/.test(s)) return "ja";
+  if (/[\u4e00-\u9fff]/.test(s)) return "zh";
+  const low = " " + s.toLowerCase().slice(0,3000) + " ";
+  const fr = (low.match(/ (le|la|les|des|est|et|une|que|pour|dans|ce|qui|pas) /g)||[]).length + (low.match(/[éèêàçùâîôœ]/g)||[]).length;
+  const en = (low.match(/ (the|and|is|of|to|in|that|it|for|with|was) /g)||[]).length;
+  if (/[äöüß]/.test(low) && fr < 5) return "de";
+  if (/[ñ¿¡]/.test(low)) return "es";
+  return fr > en ? "fr" : "en";
+}
+
+/* ---------- spaced review ---------- */
+function newText(title, content, lang){
+  content = content.normalize("NFC");
+  return {id:uid(), title:title || t("emptyTitle"), lang:lang || guessLang(content), content, createdAt:Date.now(), updatedAt:Date.now(),
+    stats:{attempts:0, best:0, last:0, lastAt:0}, srs:{due:0, interval:0, ease:2.5, reps:0}, cloze:0.3};
+}
+function applyResult(x, mode, acc, ratio, manual){
+  x.stats = {...x.stats, attempts:(x.stats.attempts||0)+1, last:acc, lastAt:Date.now(),
+    best: (mode==="full" || ratio>=0.99) ? Math.max(x.stats.best||0, acc) : (x.stats.best||0)};
+  if (mode === "cloze" && !manual){
+    if (acc >= 0.9) x.cloze = Math.min(1, Math.round((ratio+0.2)*10)/10);
+    else if (acc < 0.6) x.cloze = Math.max(0.1, Math.round((ratio-0.2)*10)/10);
+    else x.cloze = ratio;
+  }
+  const counts = mode === "full" || ratio >= 0.6;
+  const s = {...x.srs}, now = Date.now();
+  if (!counts){ if (!s.due) s.due = sod(now) + DAY; x.srs = s; return; }
+  if (acc >= 0.9){ s.reps = (s.reps||0)+1; s.interval = s.reps===1 ? 1 : s.reps===2 ? 3 : Math.round(s.interval*s.ease); if (acc>=0.98) s.ease = Math.min(3, s.ease+0.1); }
+  else if (acc >= 0.7){ s.interval = Math.max(1, Math.round((s.interval||1)*1.2)); s.ease = Math.max(1.3, s.ease-0.15); }
+  else { s.reps = 0; s.interval = 0; s.ease = Math.max(1.3, s.ease-0.2); }
+  s.due = s.interval === 0 ? now : sod(now) + s.interval*DAY;
+  x.srs = s;
+}
+const isDue = (x) => !!(x.srs && x.srs.due && x.srs.due <= Date.now());
+
+/* ---------- speech ---------- */
+function speak(text, lang, btn){
+  const ss = window.speechSynthesis; if (!ss) return;
+  if (ss.speaking){ ss.cancel(); if (btn) btn.textContent = t("speak"); return; }
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = ({fr:"fr-FR",en:"en-GB",ja:"ja-JP",zh:"zh-CN",de:"de-DE",es:"es-ES"})[lang] || "";
+  u.rate = state.settings.rate || 0.9;
+  u.onend = u.onerror = () => { if (btn) btn.textContent = t("speak"); };
+  if (btn) btn.textContent = t("stop");
+  try { ss.speak(u); } catch {}
+}
+
+/* ---------- sample ---------- */
+const SAMPLE = {id:"sample", sample:true, lang:"fr", title:"Le télétravail : une liberté à double tranchant",
+  content:"Depuis quelques années, le télétravail s'est imposé dans de nombreuses entreprises. Pour beaucoup de salariés, c'est avant tout un gain de temps : plus besoin de passer des heures dans les transports. On peut organiser sa journée plus librement et concilier plus facilement vie professionnelle et vie personnelle.\n\nCependant, cette liberté a un prix. Certains se sentent isolés, loin de leurs collègues, et ont du mal à séparer le travail du reste de leur vie. C'est pourquoi il me semble essentiel de trouver un équilibre : deux ou trois jours à la maison, et le reste au bureau.",
+  stats:{attempts:0,best:0}, srs:{due:0}, cloze:0.3};
+function materialize(x){
+  if (!x.sample) return x;
+  const n = newText(x.title, x.content, x.lang); putText(n); return n;
+}
+
+/* ---------- routing ---------- */
+let view = {name:"library"};
+const app = $("#app");
+function go(v){ window.speechSynthesis && window.speechSynthesis.cancel(); view = v; render(); window.scrollTo(0,0); }
+function softRender(){ updateSync(); if (["library","stats","settings"].includes(view.name)) render(); }
+function renderTabs(){
+  const tabs = $("#tabs"); tabs.replaceChildren();
+  [["library","lib"],["stats","stats"],["settings","settings"]].forEach(([n,k]) => {
+    const cur = view.name === n || (n==="library" && ["edit","cloze","full"].includes(view.name));
+    tabs.append(h("button",{class:"tab","aria-current":cur?"page":null,onclick:()=>go({name:n}),text:t(k)}));
+  });
+}
+function render(){
+  document.documentElement.lang = uiLang;
+  renderTabs(); updateSync();
+  const f = {library:renderLibrary, edit:renderEdit, cloze:renderCloze, full:renderFull, stats:renderStats, settings:renderSettings}[view.name] || renderLibrary;
+  app.replaceChildren(f());
+}
+
+/* ---------- library ---------- */
+function textCard(x){
+  const due = isDue(x);
+  return h("article",{class:"card"},
+    h("div",{class:"row"}, h("span",{class:"chip",text:x.lang}), x.sample && h("span",{class:"chip sample",text:t("sample")}), due && h("span",{class:"chip due",text:t("due")})),
+    h("h3",{text:x.title}),
+    h("div",{class:"ex",text:x.content.slice(0,160)}),
+    h("div",{class:"meta"},
+      h("span",null, x.content.length+" "+t("chars")),
+      h("span",null, x.stats.attempts ? t("best")+" "+pct(x.stats.best||x.stats.last||0) : t("never")),
+      !x.sample && h("span",null, t("next")+" "+fmtDue(x.srs.due))),
+    x.sample && h("div",{class:"small muted",text:t("sampleNote")}),
+    h("div",{class:"row"},
+      h("button",{class:"btn primary sm",onclick:()=>go({name:"cloze",id:materialize(x).id})}, t("cloze")+" "+pct(x.cloze||0.3)),
+      h("button",{class:"btn sm",onclick:()=>go({name:"full",id:materialize(x).id})}, t("full")),
+      h("span",{class:"spacer"}),
+      !x.sample && h("button",{class:"btn ghost sm",onclick:()=>go({name:"edit",id:x.id}),text:t("edit")}))
+  );
+}
+function renderLibrary(){
+  const texts = [...state.texts.values()].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  const due = texts.filter(isDue);
+  const drop = h("div",{class:"drop",text:t("dropHint")});
+  const wrap = h("div",null,
+    h("div",{class:"lib-head"},
+      h("h1",{text:t("lib")}), h("span",{class:"spacer"}),
+      h("button",{class:"btn",onclick:()=>$("#filein").click()}, t("importFile")),
+      h("button",{class:"btn primary",onclick:()=>go({name:"edit",id:null})}, "+ "+t("newText"))),
+    due.length ? h("section",{class:"section"}, h("h2",null, t("due")+" · "+due.length), h("div",{class:"cards"}, due.map(textCard))) : null,
+    h("section",{class:"section"}, h("h2",null, t("allTexts")+" · "+texts.length),
+      h("div",{class:"cards"}, texts.length ? texts.map(textCard) : textCard(SAMPLE)),
+      drop)
+  );
+  ["dragenter","dragover"].forEach(ev => wrap.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("hover"); }));
+  ["dragleave","drop"].forEach(ev => wrap.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("hover"); }));
+  wrap.addEventListener("drop", e => importFiles(e.dataTransfer.files));
+  return wrap;
+}
+
+/* ---------- import ---------- */
+function loadScript(src){
+  return new Promise((res, rej) => { const s = h("script",{src}); s.onload = res; s.onerror = rej; document.head.append(s); });
+}
+let mammothP, pdfP;
+function loadMammoth(){
+  mammothP = mammothP || loadScript("vendor/mammoth.browser.min.js").then(() => window.mammoth);
+  mammothP.catch(() => mammothP = null);
+  return mammothP;
+}
+function loadPdf(){
+  // the worker script runs on the main thread (window.pdfjsWorker); cross-origin workers are not allowed here
+  const base = "vendor/";
+  pdfP = pdfP || loadScript(base+"pdf.min.js").then(() => loadScript(base+"pdf.worker.min.js")).then(() => {
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = base+"pdf.worker.min.js";
+    return window.pdfjsLib;
+  });
+  pdfP.catch(() => pdfP = null);
+  return pdfP;
+}
+const CJK = /[　-鿿가-힣＀-￯]/;
+function joinLine(a, b){
+  if (!a) return b;
+  if (/\p{L}-$/u.test(a) && /^\p{Ll}/u.test(b)) return a.slice(0,-1) + b;
+  if (CJK.test(a.slice(-1)) || CJK.test(b[0])) return a + b;
+  return a + " " + b;
+}
+async function pdfText(buf){
+  const lib = await loadPdf();
+  const doc = await lib.getDocument({data:new Uint8Array(buf), isEvalSupported:false}).promise;
+  const paras = []; let cur = "";
+  const endPara = () => { if (cur.trim()) paras.push(cur.trim()); cur = ""; };
+  for (let p = 1; p <= doc.numPages; p++){
+    const tc = await (await doc.getPage(p)).getTextContent();
+    const lines = []; let ln = null;
+    for (const it of tc.items){
+      if (typeof it.str !== "string") continue;
+      const y = it.transform[5], ht = it.height || Math.abs(it.transform[3]) || 10;
+      if (!ln || Math.abs(y - ln.y) > ht*0.5){ ln = {t:"", y, h:ht}; lines.push(ln); }
+      ln.t += it.str;
+      if (it.hasEOL) ln = null;
+    }
+    let prevY = null, prevH = 0;
+    for (const l of lines){
+      const s = l.t.replace(/\s+/g," ").trim();
+      if (!s || /^[-–—\s]*\d{1,4}[-–—\s]*$/.test(s)) continue; // blank lines and page numbers
+      if (prevY !== null && prevY - l.y > Math.max(l.h, prevH) * 1.75) endPara();
+      cur = joinLine(cur, s); prevY = l.y; prevH = l.h;
+    }
+    if (/[.!?。！？:：»”"]$/.test(cur)) endPara();
+  }
+  endPara();
+  return paras.join("\n\n");
+}
+const isPdf = (f) => /\.pdf$/i.test(f.name) || f.type === "application/pdf";
+async function readFileText(f){
+  if (isPdf(f)){
+    const txt = await pdfText(await f.arrayBuffer());
+    if (!txt.trim()) throw {pdfEmpty:true};
+    return txt;
+  }
+  if (/\.docx$/i.test(f.name)){
+    const m = await loadMammoth();
+    const r = await m.extractRawText({arrayBuffer: await f.arrayBuffer()});
+    return r.value;
+  }
+  return await f.text();
+}
+async function importFiles(files){
+  let n = 0, last = null, pdf = false;
+  for (const f of files || []){
+    try {
+      let txt = (await readFileText(f)).replace(/\r\n?/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+      if (/\.md$|\.markdown$/i.test(f.name)) txt = txt.replace(/^#{1,6}\s+/gm,"").replace(/\*\*|__|`/g,"");
+      if (!txt) continue;
+      last = newText(f.name.replace(/\.[^.]+$/,""), txt); putText(last); n++; pdf = isPdf(f);
+    } catch (e){ console.error(e); toast(e && e.pdfEmpty ? t("pdfEmpty") : isPdf(f) ? t("pdfFail") : t("docxFail")); }
+  }
+  if (!n) return;
+  // PDF layout rarely maps cleanly to paragraphs, so open a single PDF in the editor for a check
+  if (n === 1 && pdf){ toast(t("checkImport")); go({name:"edit", id:last.id}); }
+  else { toast(t("imported",{n})); if (view.name === "library") render(); }
+}
+$("#filein").addEventListener("change", e => { importFiles(e.target.files); e.target.value = ""; });
+
+/* ---------- editor ---------- */
+function renderEdit(){
+  const x = view.id ? state.texts.get(view.id) : null;
+  const title = h("input",{class:"input",id:"ed-title",value:x ? x.title : "",placeholder:t("emptyTitle")});
+  const lang = h("select",{class:"input",id:"ed-lang"}, Object.entries(LANGS).map(([k,v]) => h("option",{value:k,text:v})));
+  lang.value = x ? x.lang : "fr";
+  const body = h("textarea",{class:"input",id:"ed-body",spellcheck:"false"}); body.value = x ? x.content : "";
+  const count = h("span",{class:"small muted",text:body.value.length+" "+t("chars")});
+  body.addEventListener("input", () => { count.textContent = body.value.length+" "+t("chars"); if (!x && body.value.length > 20 && !lang.dataset.touched) lang.value = guessLang(body.value); });
+  lang.addEventListener("change", () => lang.dataset.touched = "1");
+  let armed = false;
+  const del = x && h("button",{class:"btn danger",onclick:() => {
+    if (!armed){ armed = true; del.textContent = t("confirmDel"); del.classList.add("armed"); setTimeout(()=>{ armed=false; del.textContent=t("del"); del.classList.remove("armed"); }, 3000); return; }
+    removeText(x.id); toast(t("deleted")); go({name:"library"});
+  }}, t("del"));
+  const save = () => {
+    const content = body.value.replace(/\r\n?/g,"\n").trim();
+    if (!content){ toast(t("needContent")); return; }
+    const y = x ? {...x, title:title.value.trim()||t("emptyTitle"), lang:lang.value, content:content.normalize("NFC")} : newText(title.value.trim(), content, lang.value);
+    putText(y); toast(t("saved")); go({name:"library"});
+  };
+  return h("div",{class:"stack"},
+    h("div",{class:"row"}, h("button",{class:"btn ghost",onclick:()=>go({name:"library"})}, "← "+t("back")), h("h1",{text:x ? t("edit") : t("newText")})),
+    h("div",{class:"row",style:"align-items:flex-end"},
+      h("div",{class:"field",style:"flex:3;min-width:200px"}, h("label",{for:"ed-title",text:t("title")}), title),
+      h("div",{class:"field",style:"flex:1;min-width:130px"}, h("label",{for:"ed-lang",text:t("language")}), lang)),
+    h("div",{class:"field"}, h("label",{for:"ed-body",text:t("content")}), body, count),
+    h("div",{class:"row"}, h("button",{class:"btn primary",onclick:save}, t("save")), h("button",{class:"btn",onclick:()=>go({name:"library"})}, t("cancel")), h("span",{class:"spacer"}), del)
+  );
+}
+
+/* ---------- cloze ---------- */
+// manual blanks are stored as [tokenIndex, word] so edits to the text drop stale picks
+function manualPicks(x, toks){ return (x.manual||[]).filter(([i,w]) => toks[i] && toks[i].w && toks[i].s === w).map(([i]) => i); }
+function renderPick(x){
+  const toks = segment(x.content, x.lang);
+  const sel = new Set(manualPicks(x, toks));
+  const count = h("span",{class:"count"});
+  const words = [];
+  const upd = () => { count.textContent = t("selected",{n:sel.size}); };
+  const prose = h("div",{class:"prose pick",lang:x.lang});
+  toks.forEach((k,i) => {
+    if (!k.w){ prose.append(k.s); return; }
+    const sp = h("span",{class:"pw"+(sel.has(i)?" on":""),role:"button",tabindex:"0","aria-pressed":String(sel.has(i)),text:k.s});
+    const tog = () => { sel.has(i) ? sel.delete(i) : sel.add(i); sp.classList.toggle("on", sel.has(i)); sp.setAttribute("aria-pressed", String(sel.has(i))); upd(); };
+    sp.addEventListener("click", tog);
+    sp.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); tog(); } });
+    words.push(sp); prose.append(sp);
+  });
+  const save = () => { const y = {...x, manual:[...sel].sort((a,b)=>a-b).map(i => [i, toks[i].s])}; putText(y); };
+  upd();
+  return h("div",{class:"stack"},
+    h("div",{class:"ptitle"}, h("button",{class:"btn ghost sm",onclick:()=>go({name:"cloze",id:x.id})}, "← "+t("back")), h("h1",{text:x.title}), h("span",{class:"chip",text:t("manual")})),
+    h("div",{class:"pbar"},
+      h("span",{class:"small muted",text:t("pickHint")}), h("span",{class:"spacer"}), count,
+      h("button",{class:"btn sm",onclick:()=>{ sel.clear(); words.forEach(w => { w.classList.remove("on"); w.setAttribute("aria-pressed","false"); }); upd(); }}, t("clear")),
+      h("button",{class:"btn primary sm",onclick:()=>{ if (!sel.size){ toast(t("needPick")); return; } save(); go({name:"cloze",id:x.id,ratio:"manual"}); }}, t("startPractice"))),
+    h("div",{class:"sheet"}, prose)
+  );
+}
+function renderCloze(){
+  const x = state.texts.get(view.id);
+  if (!x) return renderLibrary();
+  if (view.pick) return renderPick(x);
+  let ratio = view.ratio ?? x.cloze ?? 0.3;
+  const manual = ratio === "manual";
+  let initials = view.initials ?? lsGet("pc.initials") ?? false;
+  const toks = segment(x.content, x.lang);
+  const wordIdx = toks.map((k,i)=>k.w?i:-1).filter(i=>i>=0);
+  const n = Math.max(1, Math.round(wordIdx.length*ratio));
+  const mw = !manual && state.settings.smart !== false ? missWeights(x) : new Map();
+  const wOf = (i) => mw.get(normWord(toks[i].s)) || 0;
+  // weighted sampling without replacement: key = u^(1/w)
+  const pool = wordIdx.map(i => ({i, k:Math.pow(Math.random(), 1/(1 + 4*wOf(i)))})).sort((a,b) => b.k - a.k).map(o => o.i);
+  const picks = manual ? manualPicks(x, toks) : [];
+  if (manual && !picks.length) return renderPick(x);
+  const chosen = new Set(manual ? picks : pool.slice(0,n));
+  const weakN = [...chosen].filter(i => wOf(i) > 0).length;
+  const effRatio = manual ? Math.round(chosen.size / Math.max(1, wordIdx.length) * 100) / 100 : ratio;
+  const blanks = [];
+  let started = 0, done = false, current = null;
+
+  const prose = h("div",{class:"prose",lang:x.lang});
+  toks.forEach((k,i) => {
+    if (!chosen.has(i)){ prose.append(k.s); return; }
+    const g = graphemes(k.s);
+    const pre = initials && g.length > 1 ? g[0] : "";
+    const answer = pre ? g.slice(1).join("") : k.s;
+    const inp = h("input",{class:"blank",type:"text",autocomplete:"off",autocapitalize:"off",autocorrect:"off",spellcheck:"false",enterkeyhint:"next","aria-label":"blank "+(blanks.length+1),
+      style:"width:"+(dispWidth(answer)+1.6)+"ch"});
+    const b = {inp, answer, full:k.s, state:"", err:false, hint:false, shown:false, composing:false};
+    blanks.push(b);
+    inp.addEventListener("compositionstart", () => b.composing = true);
+    inp.addEventListener("compositionend", () => { b.composing = false; check(b); });
+    inp.addEventListener("input", () => { if (!b.composing) check(b); });
+    inp.addEventListener("focus", () => current = b);
+    inp.addEventListener("keydown", e => {
+      if (e.key === "Enter"){ e.preventDefault(); focusNext(b); }
+      else if (e.key === "Backspace" && !inp.value){ const p = blanks[blanks.indexOf(b)-1]; if (p){ e.preventDefault(); p.inp.focus(); } }
+    });
+    prose.append(pre ? h("span",{class:"blank-wrap"}, h("span",{class:"hintpre",text:pre}), inp) : inp);
+  });
+
+  const countEl = h("span",{class:"count"});
+  const bar = h("i");
+  function setState(b, s){ b.state = s; b.inp.className = "blank" + (s ? " "+s : ""); }
+  function check(b){
+    if (!started) started = Date.now();
+    if (b.state === "ok" || b.state === "shown") return;
+    const v = normWord(b.inp.value), a = normWord(b.answer);
+    if (!v) setState(b, "");
+    else if (v === a){ setState(b, "ok"); b.inp.readOnly = true; focusNext(b); }
+    else if (!a.startsWith(v)){ setState(b, "bad"); b.err = true; }
+    else setState(b, "");
+    progress();
+  }
+  function focusNext(b){
+    const i = blanks.indexOf(b);
+    const nx = blanks.slice(i+1).concat(blanks.slice(0,i)).find(o => o.state !== "ok" && o.state !== "shown");
+    if (nx) nx.inp.focus({preventScroll:false});
+  }
+  function progress(){
+    const fin = blanks.filter(b => b.state==="ok" || b.state==="shown").length;
+    countEl.textContent = fin + " / " + blanks.length;
+    bar.style.width = (fin/blanks.length*100)+"%";
+    if (fin === blanks.length && !done) finish();
+  }
+  function hint(){
+    const b = current && current.state !== "ok" && current.state !== "shown" ? current : blanks.find(o => o.state !== "ok" && o.state !== "shown");
+    if (!b) return;
+    const g = graphemes(b.answer);
+    const have = graphemes(b.inp.value); let k = 0;
+    while (k < have.length && k < g.length && normWord(have[k]) === normWord(g[k])) k++;
+    b.hint = true; b.inp.value = g.slice(0, k+1).join(""); b.inp.focus(); check(b);
+  }
+  function reveal(){
+    const b = current && current.state !== "ok" && current.state !== "shown" ? current : blanks.find(o => o.state !== "ok" && o.state !== "shown");
+    if (!b) return;
+    b.shown = true; b.inp.value = b.answer; b.inp.readOnly = true; setState(b, "shown"); progress(); focusNext(b);
+  }
+  function finish(){
+    if (done) return; done = true;
+    blanks.forEach(b => { if (b.state !== "ok" && b.state !== "shown"){ b.shown = true; b.inp.value = b.answer; b.inp.readOnly = true; setState(b,"shown"); } });
+    const score = blanks.reduce((s,b) => s + (b.shown ? 0 : (b.err || b.hint) ? 0.5 : 1), 0) / blanks.length;
+    const secs = started ? (Date.now()-started)/1000 : 0;
+    const miss = [...new Set(blanks.filter(b => b.shown || b.err || b.hint).map(b => b.full))].slice(0,40);
+    const y = {...x}; applyResult(y, "cloze", score, effRatio, manual); putText(y);
+    addLog({id:x.id, title:x.title, mode:"cloze", ratio:effRatio, manual, acc:Math.round(score*1000)/1000, secs:Math.round(secs), at:Date.now(), miss});
+    resultBox.replaceChildren(resultCard(score, secs, miss, [
+      h("button",{class:"btn primary",onclick:()=>go({name:"cloze",id:x.id,ratio:manual ? "manual" : y.cloze,initials})}, t("again")+" · "+(manual ? t("manual") : pct(y.cloze))),
+      h("button",{class:"btn",onclick:()=>go({name:"full",id:x.id})}, t("tryFull"))
+    ], !manual && y.cloze > ratio ? t("levelUp")+" "+pct(y.cloze) : ""));
+    resultBox.hidden = false;
+    resultBox.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+
+  const ratios = [0.1,0.2,0.3,0.4,0.5,0.6,0.8,1];
+  const ratioSel = h("select",{class:"input",id:"cz-ratio",style:"width:auto;padding:5px 8px","aria-label":t("ratio"),onchange:e=>{ const v = e.target.value; go(v === "manual" ? {name:"cloze",id:x.id,ratio:"manual",initials} : {name:"cloze",id:x.id,ratio:+v,initials}); }},
+    ratios.map(r => h("option",{value:r,text:t("ratio")+" "+pct(r)})),
+    h("option",{value:"manual",text:t("manual")+(x.manual && x.manual.length ? " ("+x.manual.length+")" : "")}));
+  if (!manual && !ratios.includes(ratio)) ratioSel.append(h("option",{value:ratio,text:t("ratio")+" "+pct(ratio)}));
+  ratioSel.value = String(ratio);
+  const initBtn = h("button",{class:"btn sm","aria-pressed":String(initials),onclick:()=>{ lsSet("pc.initials", !initials); go({name:"cloze",id:x.id,ratio,initials:!initials}); }}, (initials?"✓ ":"")+t("firstLetter"));
+  const speakBtn = h("button",{class:"btn sm",onclick:e=>speak(x.content, x.lang, e.currentTarget)}, t("speak"));
+  const resultBox = h("div",{hidden:true});
+
+  const el = h("div",{class:"stack"},
+    h("div",{class:"ptitle"}, h("button",{class:"btn ghost sm",onclick:()=>go({name:"library"})}, "← "+t("back")), h("h1",{text:x.title}), h("span",{class:"chip",text:t("cloze")}), weakN ? h("span",{class:"chip smart",title:t("smartD"),text:t("smart")+" · "+t("weakHint",{n:weakN})}) : null),
+    h("div",{class:"pbar"},
+      ratioSel, initBtn, speakBtn,
+      h("span",{class:"spacer"}), countEl,
+      h("button",{class:"btn sm",onclick:hint}, t("hint")),
+      h("button",{class:"btn sm",onclick:reveal}, t("reveal")),
+      manual ? h("button",{class:"btn sm",onclick:()=>go({name:"cloze",id:x.id,pick:true})}, t("pick"))
+        : h("button",{class:"btn sm",onclick:()=>go({name:"cloze",id:x.id,ratio,initials})}, t("reshuffle")),
+      h("button",{class:"btn primary sm",onclick:finish}, t("submit")),
+      h("div",{class:"progress"}, bar)),
+    resultBox,
+    h("div",{class:"sheet"}, prose)
+  );
+  progress();
+  setTimeout(() => { if (matchMedia("(pointer:fine)").matches && blanks[0]) blanks[0].inp.focus({preventScroll:true}); }, 30);
+  return el;
+}
+
+function resultCard(score, secs, miss, actions, note){
+  const cls = score >= 0.9 ? "good" : score >= 0.7 ? "mid" : "bad";
+  return h("div",{class:"result"},
+    h("div",{class:"row",style:"gap:28px;align-items:flex-end"},
+      h("div",null, h("div",{class:"small muted",text:t("accuracy")}), h("div",{class:"big "+cls,text:pct(score)})),
+      h("div",null, h("div",{class:"small muted",text:t("time")}), h("div",{class:"big",style:"font-size:28px",text:fmtSecs(secs)})),
+      note && h("div",{class:"small",style:"color:var(--ok);font-weight:600",text:note})),
+    miss && (miss.length ? h("div",{class:"stack",style:"gap:6px"}, h("div",{class:"small muted",text:t("missed")}), h("div",{class:"misslist"}, miss.map(w => h("span",{text:w})))) : h("div",{class:"small",style:"color:var(--ok)",text:t("nomiss")})),
+    h("div",{class:"row"}, actions)
+  );
+}
+
+/* ---------- full recall ---------- */
+const dmp = typeof diff_match_patch !== "undefined" ? new diff_match_patch() : null;
+if (dmp) dmp.Diff_Timeout = 0.4;
+function diffOps(target, typed, live){
+  // returns [[op, text-in-normalized-space, sourceIdxArray, sourceIsTyped]]
+  const T = normMapped(target, state.settings.ignorePunct), Y = normMapped(typed, state.settings.ignorePunct);
+  let tgt = T.s;
+  if (live) tgt = tgt.slice(0, Y.s.length + 24);
+  let diffs;
+  if (dmp) diffs = dmp.diff_main(tgt, Y.s);
+  else diffs = [[-1,tgt],[1,Y.s]];
+  if (live){ while (diffs.length && diffs[diffs.length-1][0] === -1) diffs.pop(); }
+  return {diffs, T, Y};
+}
+function renderDiff(container, target, typed, live){
+  const {diffs, T, Y} = diffOps(target, typed, live);
+  container.replaceChildren();
+  let ti = 0, yi = 0, errs = 0;
+  const errPos = new Set();
+  const markT = (k) => { const oi = T.map[Math.min(k, T.map.length-1)]; if (oi != null) errPos.add(oi); };
+  const fromY = (a, len) => { let s = ""; const seen = new Set(); for (let k=a;k<a+len;k++){ const oi = Y.map[k]; if (!seen.has(oi)){ seen.add(oi); s += Y.chars[oi]; } } return s; };
+  const fromT = (a, len) => { let s = ""; const seen = new Set(); for (let k=a;k<a+len;k++){ const oi = T.map[k]; if (!seen.has(oi)){ seen.add(oi); s += T.chars[oi]; } } return s; };
+  for (const [op, txt] of diffs){
+    const L = Array.from(txt).length; // normalized strings are arrays of code points
+    if (op === 0){ container.append(fromY(yi, L)); yi += L; ti += L; }
+    else if (op === 1){ container.append(h("span",{class:"d-ins",text:fromY(yi, L)})); yi += L; errs += L; markT(ti > 0 && ti >= T.map.length ? ti-1 : ti); }
+    else { for (let k=ti;k<ti+L;k++) markT(k); container.append(live ? h("span",{class:"d-gap",title:"missing"}) : h("span",{class:"d-del",text:fromT(ti, L)})); ti += L; errs += L; }
+  }
+  return {errs, errPos, total: Array.from(T.s).length, lev: dmp ? dmp.diff_levenshtein(diffs) : errs};
+}
+function renderFull(){
+  let x = state.texts.get(view.id);
+  if (!x) return renderLibrary();
+  if (x.content !== x.content.normalize("NFC")){ x = {...x, content:x.content.normalize("NFC")}; putText(x); }
+  let refMode = view.ref ?? "hide";
+  let live = lsGet("pc.live") ?? true;
+  let started = 0, done = false;
+
+  const ref = h("div",{class:"ref",lang:x.lang});
+  function drawRef(){
+    ref.hidden = refMode === "hide";
+    ref.replaceChildren();
+    if (refMode === "show") ref.textContent = x.content;
+    else if (refMode === "initials"){
+      segment(x.content, x.lang).forEach(k => {
+        if (!k.w){ ref.append(k.s); return; }
+        const g = graphemes(k.s);
+        ref.append(h("span",{class:"fl",text:g[0]}), g.length>1 ? h("span",{class:"rest",text:"_".repeat(Math.min(g.length-1,12))}) : "");
+      });
+    }
+  }
+  const segBtns = ["hide","initials","show"].map(m => h("button",{"aria-pressed":String(refMode===m),onclick:()=>{ refMode = m; segBtns.forEach((b,i)=>b.setAttribute("aria-pressed", String(["hide","initials","show"][i]===m))); drawRef(); }}, t(m==="hide"?"hide":m==="initials"?"initials":"show")));
+  const ta = h("textarea",{class:"typearea",id:"full-input",lang:x.lang,placeholder:t("startTyping"),autocomplete:"off",autocapitalize:"sentences",autocorrect:"off",spellcheck:"false"});
+  const draft = lsGet("pc.draft."+x.id); if (draft) ta.value = draft;
+  const livePanel = h("div",{class:"live",lang:x.lang});
+  const liveWrap = h("div",{class:"stack",style:"gap:6px"}, h("div",{class:"legend"}, h("span",null, h("span",{class:"d-ins",text:"abc"})," "+t("legendIns")), h("span",null, h("span",{class:"d-gap"})," "+t("legendDel"))), livePanel);
+  const countEl = h("span",{class:"count"});
+  let composing = false, timer;
+  function update(){
+    lsSet("pc.draft."+x.id, ta.value);
+    const tl = normMapped(x.content, state.settings.ignorePunct).s.length;
+    const yl = normMapped(ta.value, state.settings.ignorePunct).s.length;
+    countEl.textContent = Math.min(yl, tl) + " / " + tl;
+    liveWrap.hidden = !live || !ta.value.trim();
+    if (live && ta.value.trim()) renderDiff(livePanel, x.content, ta.value, true);
+  }
+  ta.addEventListener("compositionstart", () => composing = true);
+  ta.addEventListener("compositionend", () => { composing = false; update(); });
+  ta.addEventListener("input", () => { if (!started) started = Date.now(); if (composing) return; clearTimeout(timer); timer = setTimeout(update, 120); });
+  const liveBtn = h("button",{class:"btn sm","aria-pressed":String(live),onclick:()=>{ live = !live; lsSet("pc.live", live); liveBtn.textContent = (live?"✓ ":"")+t("liveCheck"); update(); }}, (live?"✓ ":"")+t("liveCheck"));
+  const resultBox = h("div",{hidden:true});
+  function finish(){
+    if (done || !ta.value.trim()) return; done = true;
+    const box = h("div",{class:"live",lang:x.lang});
+    const r = renderDiff(box, x.content, ta.value, false);
+    const score = Math.max(0, 1 - r.lev / Math.max(1, r.total));
+    const secs = started ? (Date.now()-started)/1000 : 0;
+    const hit = (a, b) => { for (let k=a;k<b;k++) if (r.errPos.has(k)) return true; return false; };
+    const words = spans(x.content, x.lang, "word");
+    const missIdx = words.map((w,i) => w.w && hit(w.start, w.end) ? i : -1).filter(i => i >= 0);
+    const miss = [...new Set(missIdx.map(i => words[i].s))].slice(0, 40);
+    const y = {...x}; applyResult(y, "full", score, 1); putText(y);
+    addLog({id:x.id, title:x.title, mode:"full", ratio:1, acc:Math.round(score*1000)/1000, secs:Math.round(secs), at:Date.now(), miss});
+    const weak = spans(x.content, x.lang, "sentence").filter(sn => sn.s.trim()).map(sn => {
+      let n = 0; for (let k=sn.start;k<sn.end;k++) if (r.errPos.has(k)) n++;
+      return {...sn, n};
+    }).filter(sn => sn.n > 0);
+    const boxes = weak.map(() => h("input",{type:"checkbox",checked:true}));
+    const drill = (whole) => {
+      const picked = weak.filter((sn, i) => boxes[i].checked);
+      const idx = words.map((w,i) => i).filter(i => words[i].w && picked.some(sn => words[i].start >= sn.start && words[i].start < sn.end) && (whole || missIdx.includes(i)));
+      if (!idx.length){ toast(t("needPick")); return; }
+      const cur = state.texts.get(x.id) || y;
+      putText({...cur, manual:idx.map(i => [i, words[i].s])});
+      go({name:"cloze", id:x.id, ratio:"manual"});
+    };
+    const weakBox = weak.length ? h("section",{class:"stack",style:"gap:8px"},
+      h("h2",{text:t("weakSent")+" · "+weak.length}),
+      h("div",{class:"small muted",text:t("weakNote")}),
+      h("div",{class:"weak"}, weak.map((sn, i) => h("label",{class:"ws"}, boxes[i], h("span",{class:"s",lang:x.lang,text:sn.s.trim()}), h("span",{class:"n",text:"✗ "+sn.n})))),
+      h("div",{class:"row"},
+        h("button",{class:"btn primary",onclick:()=>drill(false)}, t("blankMissed")),
+        h("button",{class:"btn",onclick:()=>drill(true)}, t("blankSent")))) : null;
+    lsSet("pc.draft."+x.id, "");
+    ta.readOnly = true; liveWrap.hidden = true;
+    resultBox.replaceChildren(h("div",{class:"stack"},
+      resultCard(score, secs, miss, [
+        h("button",{class:"btn primary",onclick:()=>go({name:"full",id:x.id})}, t("again")),
+        h("button",{class:"btn",onclick:()=>go({name:"cloze",id:x.id})}, t("cloze"))
+      ]),
+      weakBox,
+      h("div",{class:"legend"}, h("span",null, h("span",{class:"d-ins",text:"abc"})," "+t("legendIns")), h("span",null, h("span",{class:"d-del",text:"abc"})," "+t("legendDel"))),
+      box));
+    resultBox.hidden = false;
+    resultBox.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  drawRef();
+  const el = h("div",{class:"stack"},
+    h("div",{class:"ptitle"}, h("button",{class:"btn ghost sm",onclick:()=>go({name:"library"})}, "← "+t("back")), h("h1",{text:x.title}), h("span",{class:"chip",text:t("full")})),
+    h("div",{class:"pbar"},
+      h("span",{class:"small muted",text:t("ref")}), h("div",{class:"seg"}, segBtns), liveBtn,
+      h("button",{class:"btn sm",onclick:e=>speak(x.content, x.lang, e.currentTarget)}, t("speak")),
+      h("span",{class:"spacer"}), countEl,
+      h("button",{class:"btn primary sm",onclick:finish}, t("submit"))),
+    resultBox,
+    ref,
+    h("div",{class:"sheet"}, ta),
+    liveWrap
+  );
+  setTimeout(update, 0);
+  return el;
+}
+
+/* ---------- stats ---------- */
+function renderStats(){
+  const logs = allLogs();
+  const byDay = new Map();
+  logs.forEach(l => { const k = dayKey(l.at); const v = byDay.get(k) || {n:0, secs:0}; v.n++; v.secs += l.secs||0; byDay.set(k, v); });
+  let streak = 0; { let d = sod(Date.now()); if (!byDay.has(dayKey(d))) d -= DAY; while (byDay.has(dayKey(d))){ streak++; d -= DAY; } }
+  const weekStart = sod(Date.now()) - ((new Date().getDay()+6)%7)*DAY;
+  const weekMin = Math.round(logs.filter(l => l.at >= weekStart).reduce((s,l)=>s+(l.secs||0),0)/60);
+  const texts = [...state.texts.values()];
+  const dueN = texts.filter(isDue).length;
+
+  // heatmap: 20 weeks, Monday-first columns
+  const heat = h("div",{class:"heat",role:"img","aria-label":t("activity")});
+  const today = sod(Date.now());
+  const start = today - ((new Date().getDay()+6)%7)*DAY - 19*7*DAY;
+  for (let d = start; d < start + 20*7*DAY; d += DAY){
+    const v = byDay.get(dayKey(d)); const n = v ? v.n : 0;
+    const lvl = d > today ? "fut" : n===0 ? "" : n<2 ? "l1" : n<4 ? "l2" : n<7 ? "l3" : "l4";
+    heat.append(h("i",{class:lvl,title:dayKey(d)+" · "+n}));
+  }
+  const hard = new Map();
+  logs.forEach(l => (l.miss||[]).forEach(w => hard.set(w, (hard.get(w)||0)+1)));
+  const hardList = [...hard.entries()].filter(([,n])=>n>=1).sort((a,b)=>b[1]-a[1]).slice(0,30);
+
+  if (!logs.length) return h("div",{class:"stack"}, h("h1",{text:t("stats")}), h("p",{class:"muted",text:t("noData")}),
+    h("div",{class:"heat-wrap"}, h("h2",{text:t("activity"),style:"margin-bottom:10px"}), heat));
+
+  return h("div",{class:"stack",style:"gap:22px"},
+    h("h1",{text:t("stats")}),
+    h("div",{class:"tiles"},
+      [[streak,t("streak")],[weekMin,t("week")],[logs.length,t("sessions")],[dueN,t("dueCount")]].map(([v,l]) => h("div",{class:"tile"}, h("b",{text:v}), h("span",{text:l})))),
+    h("div",{class:"heat-wrap"}, h("h2",{text:t("activity"),style:"margin-bottom:10px"}), heat),
+    h("section",{class:"section",style:"margin:0"}, h("h2",{text:t("perText")}),
+      h("div",{class:"tbl-wrap"}, h("table",null,
+        h("thead",null, h("tr",null, [t("title"),t("attempts"),t("best"),t("cloze"),t("next")].map(s=>h("th",{text:s})))),
+        h("tbody",null, texts.sort((a,b)=>(a.srs.due||9e15)-(b.srs.due||9e15)).map(x => h("tr",null,
+          h("td",{class:"t",text:x.title}), h("td",{text:x.stats.attempts||0}), h("td",{text:x.stats.attempts ? pct(x.stats.best||0) : "—"}),
+          h("td",{text:pct(x.cloze||0.3)}), h("td",{text:fmtDue(x.srs.due)}))))))),
+    hardList.length ? h("section",{class:"section",style:"margin:0"}, h("h2",{text:t("hard")}),
+      h("div",{class:"misslist"}, hardList.map(([w,n]) => h("span",{text:w+" ×"+n})))) : null,
+    h("section",{class:"section",style:"margin:0"}, h("h2",{text:t("recent")}),
+      h("div",{class:"tbl-wrap"}, h("table",null,
+        h("thead",null, h("tr",null, [t("when"),t("title"),t("mode"),t("accuracy"),t("time")].map(s=>h("th",{text:s})))),
+        h("tbody",null, logs.slice(0,30).map(l => h("tr",null,
+          h("td",{text:fmtDate(l.at)}), h("td",{class:"t",text:(state.texts.get(l.id)||l).title}),
+          h("td",{text:l.mode==="full" ? t("full") : l.manual ? t("manual") : t("cloze")+" "+pct(l.ratio||0)}),
+          h("td",{text:pct(l.acc)}), h("td",{text:fmtSecs(l.secs||0)}))))))),
+    h("p",{class:"small muted",text:t("srsNote")})
+  );
+}
+
+/* ---------- settings ---------- */
+function toggleRow(key, label, desc){
+  const cb = h("input",{type:"checkbox",class:"switch",id:"set-"+key,checked:!!state.settings[key],onchange:e=>{ state.settings[key] = e.target.checked; putSettings(); }});
+  return h("div",{class:"set-row"}, h("label",{for:"set-"+key}, h("div",{text:label}), desc && h("div",{class:"d",text:desc})), cb);
+}
+async function exportBackup(){
+  const data = JSON.stringify({app:"par-coeur", version:1, exportedAt:new Date().toISOString(), texts:[...state.texts.values()], logs:Object.fromEntries(state.logs), settings:state.settings}, null, 2);
+  const name = "par-coeur-" + dayKey(Date.now()) + ".json";
+  let dl = null; try { dl = window.claude && await window.claude.use("downloads"); } catch {}
+  if (dl){ try { await dl.save({filename:name, data}); } catch (e){ if (e && e.code !== "declined") toast(e.message || "export failed"); } return; }
+  const url = URL.createObjectURL(new Blob([data], {type:"application/json"}));
+  const a = h("a",{href:url, download:name}); document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+$("#backupin").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (!d || !Array.isArray(d.texts)) throw 0;
+    d.texts.forEach(x => { if (x && x.id && x.content) putText({...newText(x.title, x.content, x.lang), ...x}); });
+    for (const [mk, arr] of Object.entries(d.logs||{})){
+      if (!Array.isArray(arr)) continue;
+      const cur = state.logs.get(mk) || [];
+      const seen = new Set(cur.map(l => l.at+":"+l.id));
+      const merged = cur.concat(arr.filter(l => !seen.has(l.at+":"+l.id))).sort((a,b)=>a.at-b.at);
+      state.logs.set(mk, merged);
+      if (db) queue("logs/"+mk, () => db.doc("logs/"+mk).set({entries:merged}));
+    }
+    saveLocal(); toast(t("restored")); render();
+  } catch { toast(t("fileFail")); }
+});
+function renderSettings(){
+  const ui = h("select",{class:"input",id:"set-ui",style:"width:auto",onchange:e=>{ uiLang = e.target.value; lsSet("pc.ui", uiLang); render(); }},
+    Object.entries(UILANGS).map(([k,v]) => h("option",{value:k,text:v})));
+  ui.value = uiLang;
+  const rate = h("input",{type:"range",id:"set-rate",min:"0.5",max:"1.3",step:"0.05",value:String(state.settings.rate||0.9),style:"width:160px",
+    onchange:e=>{ state.settings.rate = +e.target.value; putSettings(); rateOut.textContent = "×"+state.settings.rate; }});
+  const rateOut = h("span",{class:"count",text:"×"+(state.settings.rate||0.9)});
+  return h("div",{class:"stack",style:"gap:18px"},
+    h("h1",{text:t("settings")}),
+    h("div",{class:"set"},
+      h("div",{class:"set-row"}, h("label",{for:"set-ui",text:t("uiLang")}), ui),
+      toggleRow("smart", t("smart"), t("smartD")),
+      toggleRow("ignoreCase", t("ignoreCase")),
+      toggleRow("ignoreAccents", t("ignoreAccents"), t("ignoreAccentsD")),
+      toggleRow("ignorePunct", t("ignorePunct")),
+      h("div",{class:"set-row"}, h("label",{for:"set-rate",text:t("rate")}), h("div",{class:"row"}, rate, rateOut))),
+    h("div",{class:"set"},
+      h("div",{class:"set-row"}, h("div",null, h("div",{text:t("storage")+" · "+(state.cloud?t("cloud"):t("local"))}), h("div",{class:"d",text:state.cloud?t("cloudD"):t("localD")}))),
+      h("div",{class:"set-row"}, h("div",null, h("div",{text:t("exportB")}), h("div",{class:"d",text:t("exportD")})), h("button",{class:"btn sm",onclick:exportBackup}, t("exportB"))),
+      h("div",{class:"set-row"}, h("div",null, h("div",{text:t("importB")}), h("div",{class:"d",text:t("importD")})), h("button",{class:"btn sm",onclick:()=>$("#backupin").click()}, t("importB"))))
+  );
+}
+
+/* ---------- boot ---------- */
+loadLocal();
+render();
+// ask the browser not to evict this site's storage, and cache the app for offline use when served over http(s)
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch {}
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
