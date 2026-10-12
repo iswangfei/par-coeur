@@ -104,6 +104,21 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute
 .card .row{margin-top:2px}
 .drop{border:1.5px dashed var(--rule-strong);border-radius:var(--r);padding:16px;text-align:center;color:var(--muted);font-size:13.5px}
 .drop.hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.filters{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
+.frow{display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none;padding-block:2px}
+.frow::-webkit-scrollbar{display:none}
+.frow .lbl{font-size:12px;color:var(--muted);font-weight:600;min-width:34px;flex:none}
+.fchip{flex:none;border:1px solid var(--line);background:var(--sheet);color:var(--ink-2);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
+.fchip b{font-weight:600;color:var(--muted);margin-left:4px;font-variant-numeric:tabular-nums}
+.fchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.fchip[aria-pressed="true"] b{color:inherit;opacity:.7}
+.fchip.add{border-style:dashed;color:var(--accent)}
+.fchip.empty:not([aria-pressed="true"]){opacity:.5}
+.catedit{display:flex;gap:6px;align-items:center;flex:none}
+.catedit input{border:1px solid var(--accent);background:var(--sheet);border-radius:999px;padding:5px 12px;font-size:13px;width:150px}
+.listhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.listhead select.input{width:auto;padding:4px 8px;font-size:13px;min-height:0}
+.chip.cat{background:var(--line);color:var(--ink-2);text-transform:none;letter-spacing:0}
 .section{display:flex;flex-direction:column;gap:10px;margin-top:22px}
 
 /* editor */
@@ -221,7 +236,7 @@ const I18N = {
     rate:"朗读语速",exportB:"导出备份",exportD:"下载全部文本和记录（JSON）",importB:"导入备份",importD:"从 JSON 备份恢复，会合并到现有数据",
     cloud:"云端同步",local:"仅本设备",storage:"数据保存",cloudD:"文本和记录保存在云端，手机和电脑打开同一链接即可同步。",localD:"数据只保存在这台设备的这个浏览器里。请定期导出备份。",
     saved:"已保存",deleted:"已删除",imported:"已导入 {n} 篇",saveFail:"保存失败，请稍后再试",emptyTitle:"未命名",needContent:"内容不能为空",
-    docxFail:"无法读取 .docx 文件",srsNote:"挖空 ≥60% 或全文默写才会推进复习计划。",later:"待定",min:"分钟",days:"天",restored:"备份已恢复",fileFail:"文件格式不对",manual:"手动挖空",pick:"选词",pickHint:"点单词把它挖空，再点一次取消。选好后点“开始练习”。",clear:"清空",startPractice:"开始练习",selected:"已选 {n} 个",needPick:"先选几个要挖空的词",pdfEmpty:"这个 PDF 里没有可提取的文字（可能是扫描件）",pdfFail:"无法读取这个 PDF",checkImport:"PDF 已导入，请检查文字后保存",smart:"智能挖空",smartD:"随机挖空时，优先挖掉你最近答错的词",weakHint:"含 {n} 个易错词",weakSent:"薄弱句子",weakNote:"勾选要练的句子，一键生成手动挖空。",blankMissed:"只挖错词",blankSent:"挖整句"},
+    docxFail:"无法读取 .docx 文件",srsNote:"挖空 ≥60% 或全文默写才会推进复习计划。",later:"待定",min:"分钟",days:"天",restored:"备份已恢复",fileFail:"文件格式不对",manual:"手动挖空",pick:"选词",pickHint:"点单词把它挖空，再点一次取消。选好后点“开始练习”。",clear:"清空",startPractice:"开始练习",selected:"已选 {n} 个",needPick:"先选几个要挖空的词",pdfEmpty:"这个 PDF 里没有可提取的文字（可能是扫描件）",pdfFail:"无法读取这个 PDF",checkImport:"PDF 已导入，请检查文字后保存",smart:"智能挖空",smartD:"随机挖空时，优先挖掉你最近答错的词",weakHint:"含 {n} 个易错词",weakSent:"薄弱句子",weakNote:"勾选要练的句子，一键生成手动挖空。",blankMissed:"只挖错词",blankSent:"挖整句",category:"分类",uncat:"未分类",all:"全部",langF:"语言",catF:"分类",newCat:"新建分类",catName:"分类名称，如：听力",add:"添加",rename:"重命名",delCat:"删除分类",delCatConfirm:"确认删除？文本会变成未分类",catExists:"已有这个分类",catHint:"选择或输入新分类",sortTitle:"按标题",sortAdded:"按添加时间",sortEdited:"按最近编辑",sortDue:"按复习日期",sortLabel:"排序",noMatch:"这个筛选下还没有文本。"},
   en:{lib:"Library",stats:"Progress",settings:"Settings",newText:"New",importFile:"Import file",dropHint:"Drop .txt / .md / .docx / .pdf files here, or tap Import file",
     due:"Due today",allTexts:"All texts",cloze:"Cloze",full:"Full recall",edit:"Edit",chars:"chars",best:"Best",never:"Not practised",next:"Next",today:"today",
     sample:"Sample",sampleNote:"A sample text. Practising it saves it to your library.",title:"Title",language:"Text language",content:"Content",save:"Save",cancel:"Cancel",del:"Delete",confirmDel:"Really delete?",
@@ -235,7 +250,7 @@ const I18N = {
     rate:"Speech rate",exportB:"Export backup",exportD:"Download all texts and records (JSON)",importB:"Import backup",importD:"Restore from a JSON backup, merged with current data",
     cloud:"Synced",local:"This device only",storage:"Storage",cloudD:"Texts and records are stored online. Open the same link on phone and computer.",localD:"Data lives only in this browser on this device. Export a backup regularly.",
     saved:"Saved",deleted:"Deleted",imported:"Imported {n}",saveFail:"Couldn't save. Try again shortly.",emptyTitle:"Untitled",needContent:"Content can't be empty",
-    docxFail:"Couldn't read the .docx file",srsNote:"Only cloze ≥60% or full recall moves the review schedule.",later:"—",min:"min",days:"d",restored:"Backup restored",fileFail:"That file isn't a backup",manual:"Manual blanks",pick:"Pick words",pickHint:"Tap a word to blank it, tap again to undo. Then press Start.",clear:"Clear",startPractice:"Start",selected:"{n} selected",needPick:"Pick at least one word first",pdfEmpty:"This PDF has no extractable text (it may be a scan)",pdfFail:"Couldn't read this PDF",checkImport:"PDF imported. Check the text, then save.",smart:"Smart blanks",smartD:"Random blanks favour words you recently got wrong",weakHint:"{n} weak words",weakSent:"Weak sentences",weakNote:"Tick the sentences to drill and turn them into manual blanks.",blankMissed:"Blank missed words",blankSent:"Blank whole sentences"},
+    docxFail:"Couldn't read the .docx file",srsNote:"Only cloze ≥60% or full recall moves the review schedule.",later:"—",min:"min",days:"d",restored:"Backup restored",fileFail:"That file isn't a backup",manual:"Manual blanks",pick:"Pick words",pickHint:"Tap a word to blank it, tap again to undo. Then press Start.",clear:"Clear",startPractice:"Start",selected:"{n} selected",needPick:"Pick at least one word first",pdfEmpty:"This PDF has no extractable text (it may be a scan)",pdfFail:"Couldn't read this PDF",checkImport:"PDF imported. Check the text, then save.",smart:"Smart blanks",smartD:"Random blanks favour words you recently got wrong",weakHint:"{n} weak words",weakSent:"Weak sentences",weakNote:"Tick the sentences to drill and turn them into manual blanks.",blankMissed:"Blank missed words",blankSent:"Blank whole sentences",category:"Category",uncat:"Uncategorised",all:"All",langF:"Lang",catF:"Group",newCat:"New category",catName:"Category name, e.g. Listening",add:"Add",rename:"Rename",delCat:"Delete category",delCatConfirm:"Really delete? Texts become uncategorised",catExists:"That category already exists",catHint:"Pick or type a new category",sortTitle:"Title",sortAdded:"Date added",sortEdited:"Last edited",sortDue:"Review date",sortLabel:"Sort",noMatch:"No texts match this filter yet."},
   fr:{lib:"Bibliothèque",stats:"Progrès",settings:"Réglages",newText:"Nouveau",importFile:"Importer",dropHint:"Déposez des fichiers .txt / .md / .docx / .pdf ici",
     due:"À réviser",allTexts:"Tous les textes",cloze:"Texte à trous",full:"Récitation",edit:"Modifier",chars:"car.",best:"Record",never:"Jamais pratiqué",next:"Prochaine",today:"aujourd'hui",
     sample:"Exemple",sampleNote:"Texte d'exemple. Il sera ajouté à la bibliothèque dès que vous le pratiquez.",title:"Titre",language:"Langue du texte",content:"Contenu",save:"Enregistrer",cancel:"Annuler",del:"Supprimer",confirmDel:"Confirmer ?",
@@ -249,7 +264,7 @@ const I18N = {
     rate:"Vitesse de lecture",exportB:"Exporter",exportD:"Télécharger textes et historique (JSON)",importB:"Importer une sauvegarde",importD:"Restaurer depuis un JSON",
     cloud:"Synchronisé",local:"Cet appareil",storage:"Stockage",cloudD:"Données en ligne, synchronisées entre téléphone et ordinateur.",localD:"Données gardées dans ce navigateur seulement.",
     saved:"Enregistré",deleted:"Supprimé",imported:"{n} importé(s)",saveFail:"Échec de l'enregistrement",emptyTitle:"Sans titre",needContent:"Le contenu est vide",
-    docxFail:"Lecture du .docx impossible",srsNote:"Seuls les trous ≥60 % ou la récitation font avancer les révisions.",later:"—",min:"min",days:"j",restored:"Sauvegarde restaurée",fileFail:"Fichier non reconnu",manual:"Trous choisis",pick:"Choisir les mots",pickHint:"Touchez un mot pour le masquer, touchez encore pour annuler.",clear:"Effacer",startPractice:"Commencer",selected:"{n} choisi(s)",needPick:"Choisissez au moins un mot",pdfEmpty:"Ce PDF ne contient pas de texte (scan ?)",pdfFail:"Lecture du PDF impossible",checkImport:"PDF importé. Vérifiez le texte puis enregistrez.",smart:"Trous intelligents",smartD:"Les trous aléatoires visent d'abord vos erreurs récentes",weakHint:"{n} mots fragiles",weakSent:"Phrases fragiles",weakNote:"Cochez les phrases à retravailler pour en faire un texte à trous.",blankMissed:"Masquer les mots ratés",blankSent:"Masquer les phrases"},
+    docxFail:"Lecture du .docx impossible",srsNote:"Seuls les trous ≥60 % ou la récitation font avancer les révisions.",later:"—",min:"min",days:"j",restored:"Sauvegarde restaurée",fileFail:"Fichier non reconnu",manual:"Trous choisis",pick:"Choisir les mots",pickHint:"Touchez un mot pour le masquer, touchez encore pour annuler.",clear:"Effacer",startPractice:"Commencer",selected:"{n} choisi(s)",needPick:"Choisissez au moins un mot",pdfEmpty:"Ce PDF ne contient pas de texte (scan ?)",pdfFail:"Lecture du PDF impossible",checkImport:"PDF importé. Vérifiez le texte puis enregistrez.",smart:"Trous intelligents",smartD:"Les trous aléatoires visent d'abord vos erreurs récentes",weakHint:"{n} mots fragiles",weakSent:"Phrases fragiles",weakNote:"Cochez les phrases à retravailler pour en faire un texte à trous.",blankMissed:"Masquer les mots ratés",blankSent:"Masquer les phrases",category:"Catégorie",uncat:"Sans catégorie",all:"Tout",langF:"Langue",catF:"Groupe",newCat:"Nouvelle catégorie",catName:"Nom, ex. : Compréhension orale",add:"Ajouter",rename:"Renommer",delCat:"Supprimer la catégorie",delCatConfirm:"Confirmer ? Les textes deviennent sans catégorie",catExists:"Cette catégorie existe déjà",catHint:"Choisir ou saisir une catégorie",sortTitle:"Titre",sortAdded:"Date d'ajout",sortEdited:"Dernière modif.",sortDue:"Date de révision",sortLabel:"Tri",noMatch:"Aucun texte pour ce filtre."},
   ja:{lib:"ライブラリ",stats:"記録",settings:"設定",newText:"新規",importFile:"ファイル読込",dropHint:".txt / .md / .docx / .pdf をここにドロップ",
     due:"今日の復習",allTexts:"すべてのテキスト",cloze:"穴埋め",full:"全文暗唱",edit:"編集",chars:"文字",best:"最高",never:"未練習",next:"次回",today:"今日",
     sample:"サンプル",sampleNote:"サンプル文です。練習するとライブラリに保存されます。",title:"タイトル",language:"テキストの言語",content:"本文",save:"保存",cancel:"キャンセル",del:"削除",confirmDel:"本当に削除？",
@@ -263,7 +278,7 @@ const I18N = {
     rate:"読み上げ速度",exportB:"バックアップを書き出す",exportD:"全データを JSON で保存",importB:"バックアップを読み込む",importD:"JSON から復元（既存と統合）",
     cloud:"同期中",local:"この端末のみ",storage:"保存先",cloudD:"クラウドに保存。スマホとPCで同じリンクを開けば同期。",localD:"このブラウザにのみ保存。",
     saved:"保存しました",deleted:"削除しました",imported:"{n} 件読み込みました",saveFail:"保存に失敗しました",emptyTitle:"無題",needContent:"本文が空です",
-    docxFail:".docx を読み込めません",srsNote:"穴埋め60%以上か全文暗唱のみ復習計画に反映。",later:"—",min:"分",days:"日",restored:"復元しました",fileFail:"形式が違います",manual:"手動穴埋め",pick:"語を選ぶ",pickHint:"語をタップして穴にする。もう一度タップで解除。",clear:"クリア",startPractice:"開始",selected:"{n} 語選択",needPick:"語を1つ以上選んでください",pdfEmpty:"この PDF には文字データがありません（スキャン画像かも）",pdfFail:"PDF を読み込めません",checkImport:"PDF を読み込みました。確認して保存してください。",smart:"スマート穴埋め",smartD:"ランダム穴埋めで最近間違えた語を優先",weakHint:"苦手語 {n}",weakSent:"苦手な文",weakNote:"練習したい文にチェックして手動穴埋めにします。",blankMissed:"間違えた語だけ",blankSent:"文ごと穴埋め"}
+    docxFail:".docx を読み込めません",srsNote:"穴埋め60%以上か全文暗唱のみ復習計画に反映。",later:"—",min:"分",days:"日",restored:"復元しました",fileFail:"形式が違います",manual:"手動穴埋め",pick:"語を選ぶ",pickHint:"語をタップして穴にする。もう一度タップで解除。",clear:"クリア",startPractice:"開始",selected:"{n} 語選択",needPick:"語を1つ以上選んでください",pdfEmpty:"この PDF には文字データがありません（スキャン画像かも）",pdfFail:"PDF を読み込めません",checkImport:"PDF を読み込みました。確認して保存してください。",smart:"スマート穴埋め",smartD:"ランダム穴埋めで最近間違えた語を優先",weakHint:"苦手語 {n}",weakSent:"苦手な文",weakNote:"練習したい文にチェックして手動穴埋めにします。",blankMissed:"間違えた語だけ",blankSent:"文ごと穴埋め",category:"分類",uncat:"未分類",all:"すべて",langF:"言語",catF:"分類",newCat:"新しい分類",catName:"分類名（例：リスニング）",add:"追加",rename:"名前変更",delCat:"分類を削除",delCatConfirm:"削除しますか？テキストは未分類になります",catExists:"同じ分類があります",catHint:"選ぶか新しく入力",sortTitle:"タイトル順",sortAdded:"追加順",sortEdited:"編集順",sortDue:"復習日順",sortLabel:"並び替え",noMatch:"この条件のテキストはありません。"}
 };
 const LANGS = {fr:"Français",en:"English",ja:"日本語",zh:"中文",de:"Deutsch",es:"Español",other:"Other"};
 const UILANGS = {zh:"中文",en:"English",fr:"Français",ja:"日本語"};
@@ -308,7 +323,7 @@ function lsGet(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { r
 function lsSet(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 
 /* ---------- state & storage ---------- */
-const DEFAULT_SETTINGS = {smart:true, ignoreCase:false, ignoreAccents:false, ignorePunct:true, rate:0.9};
+const DEFAULT_SETTINGS = {cats:[], smart:true, ignoreCase:false, ignoreAccents:false, ignorePunct:true, rate:0.9};
 const state = { texts:new Map(), logs:new Map(), settings:{...DEFAULT_SETTINGS}, cloud:false };
 let uiLang = lsGet("pc.ui") || (()=>{ const n=(navigator.language||"zh").slice(0,2); return I18N[n] ? n : "zh"; })();
 const t = (k, vars) => { let s = (I18N[uiLang]||I18N.zh)[k] ?? I18N.zh[k] ?? k; if (vars) for (const [a,b] of Object.entries(vars)) s = s.replace("{"+a+"}", b); return s; };
@@ -528,7 +543,7 @@ function render(){
 function textCard(x){
   const due = isDue(x);
   return h("article",{class:"card"},
-    h("div",{class:"row"}, h("span",{class:"chip",text:x.lang}), x.sample && h("span",{class:"chip sample",text:t("sample")}), due && h("span",{class:"chip due",text:t("due")})),
+    h("div",{class:"row"}, h("span",{class:"chip",text:x.lang}), x.cat && h("span",{class:"chip cat",text:x.cat}), x.sample && h("span",{class:"chip sample",text:t("sample")}), due && h("span",{class:"chip due",text:t("due")})),
     h("h3",{text:x.title}),
     h("div",{class:"ex",text:x.content.slice(0,160)}),
     h("div",{class:"meta"},
@@ -543,18 +558,109 @@ function textCard(x){
       !x.sample && h("button",{class:"btn ghost sm",onclick:()=>go({name:"edit",id:x.id}),text:t("edit")}))
   );
 }
+// library filter: per-device convenience, remembered between visits
+const filter = Object.assign({lang:"all", cat:"all", sort:"title"}, lsGet("pc.filter") || {});
+function setFilter(patch){ Object.assign(filter, patch); lsSet("pc.filter", filter); render(); }
+const collator = new Intl.Collator(undefined, {numeric:true, sensitivity:"base"});
+function allCats(){
+  const set = new Set((state.settings.cats||[]).filter(Boolean));
+  state.texts.forEach(x => { if (x.cat) set.add(x.cat); });
+  return [...set].sort((a,b) => collator.compare(a,b));
+}
+function saveCats(list){ state.settings.cats = [...new Set(list.filter(Boolean))]; putSettings(); }
+function renameCat(from, to){
+  to = to.trim(); if (!to || to === from) return;
+  state.texts.forEach(x => { if (x.cat === from) putText({...x, cat:to}); });
+  saveCats(allCats().map(c => c === from ? to : c).concat(to));
+  if (filter.cat === from) filter.cat = to;
+  setFilter({});
+}
+function deleteCat(name){
+  state.texts.forEach(x => { if (x.cat === name) putText({...x, cat:""}); });
+  saveCats((state.settings.cats||[]).filter(c => c !== name));
+  setFilter({cat:"all"});
+}
+const SORTS = {
+  title:(a,b) => collator.compare(a.title, b.title),
+  added:(a,b) => (b.createdAt||0) - (a.createdAt||0),
+  edited:(a,b) => (b.updatedAt||0) - (a.updatedAt||0),
+  due:(a,b) => (a.srs.due||9e15) - (b.srs.due||9e15) || collator.compare(a.title, b.title),
+};
+function chip(label, count, on, onclick){
+  return h("button",{class:"fchip","aria-pressed":String(on),onclick}, label, count != null ? h("b",{text:count}) : null);
+}
+function inlineInput(placeholder, initial, onDone){
+  const inp = h("input",{type:"text",id:"cat-input",value:initial||"",placeholder,"aria-label":placeholder});
+  const ok = () => { const v = inp.value.trim(); if (v) onDone(v); else render(); };
+  inp.addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); ok(); } else if (e.key === "Escape") render(); });
+  setTimeout(() => inp.focus(), 0);
+  return h("span",{class:"catedit"}, inp, h("button",{class:"btn primary sm",onclick:ok}, t("add")), h("button",{class:"btn ghost sm",onclick:()=>render()}, t("cancel")));
+}
+function renderFilters(texts){
+  const langs = new Map(); texts.forEach(x => langs.set(x.lang, (langs.get(x.lang)||0)+1));
+  const inLang = texts.filter(x => filter.lang === "all" || x.lang === filter.lang);
+  const cats = allCats();
+  const catCount = (c) => inLang.filter(x => (x.cat||"") === c).length;
+  const uncatN = catCount("");
+  // the main study languages always show, others only when a text uses them
+  const order = ["fr","en","ja","zh"].concat([...langs.keys()].filter(l => !["fr","en","ja","zh"].includes(l)));
+  const langRow = h("div",{class:"frow"},
+    h("span",{class:"lbl",text:t("langF")}),
+    chip(t("all"), texts.length, filter.lang === "all", () => setFilter({lang:"all"})),
+    order.map(l => { const n = langs.get(l) || 0; const c = chip(LANGS[l]||l, n, filter.lang === l, () => setFilter({lang:l, cat: filter.cat === "all" || texts.some(x => x.lang === l && (x.cat||"") === filter.cat) ? filter.cat : "all"})); if (!n) c.classList.add("empty"); return c; }));
+
+  const catRow = h("div",{class:"frow"},
+    h("span",{class:"lbl",text:t("catF")}),
+    chip(t("all"), inLang.length, filter.cat === "all", () => setFilter({cat:"all"})),
+    cats.map(c => chip(c, catCount(c), filter.cat === c, () => setFilter({cat:c}))),
+    uncatN && cats.length ? chip(t("uncat"), uncatN, filter.cat === "", () => setFilter({cat:""})) : null,
+    h("button",{class:"fchip add",onclick:(e) => {
+      e.currentTarget.replaceWith(inlineInput(t("catName"), "", v => {
+        if (allCats().includes(v)){ toast(t("catExists")); return; }
+        saveCats(allCats().concat(v)); setFilter({cat:v});
+      }));
+    }}, "+ "+t("newCat")));
+
+  // actions for the selected category
+  let catTools = null;
+  if (filter.cat && filter.cat !== "all" && cats.includes(filter.cat)){
+    let armed = false;
+    const del = h("button",{class:"btn ghost sm danger",onclick:() => {
+      if (!armed){ armed = true; del.textContent = t("delCatConfirm"); del.classList.add("armed"); setTimeout(() => { armed = false; del.textContent = t("delCat"); del.classList.remove("armed"); }, 3500); return; }
+      deleteCat(filter.cat);
+    }}, t("delCat"));
+    catTools = h("div",{class:"frow"}, h("span",{class:"lbl"}),
+      h("button",{class:"btn ghost sm",onclick:(e) => { e.currentTarget.replaceWith(inlineInput(t("catName"), filter.cat, v => {
+        if (v !== filter.cat && allCats().includes(v)){ toast(t("catExists")); return; }
+        renameCat(filter.cat, v); })); }}, t("rename")),
+      del);
+  }
+  return h("div",{class:"filters"}, langRow, catRow, catTools);
+}
 function renderLibrary(){
-  const texts = [...state.texts.values()].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
-  const due = texts.filter(isDue);
+  if (filter.cat !== "all" && filter.cat !== "" && !allCats().includes(filter.cat)) filter.cat = "all";
+  if (filter.lang !== "all" && !["fr","en","ja","zh"].includes(filter.lang) && ![...state.texts.values()].some(x => x.lang === filter.lang)) filter.lang = "all";
+  const texts = [...state.texts.values()];
+  const due = texts.filter(isDue).sort(SORTS.title);
+  const shown = texts.filter(x => (filter.lang === "all" || x.lang === filter.lang) && (filter.cat === "all" || (x.cat||"") === filter.cat))
+    .sort(SORTS[filter.sort] || SORTS.title);
+  const sortSel = h("select",{class:"input",id:"lib-sort","aria-label":t("sortLabel"),onchange:e => setFilter({sort:e.target.value})},
+    [["title","sortTitle"],["added","sortAdded"],["edited","sortEdited"],["due","sortDue"]].map(([v,k]) => h("option",{value:v,text:t(k)})));
+  sortSel.value = filter.sort;
   const drop = h("div",{class:"drop",text:t("dropHint")});
+  const listTitle = filter.cat === "all" ? t("allTexts") : filter.cat === "" ? t("uncat") : filter.cat;
   const wrap = h("div",null,
     h("div",{class:"lib-head"},
       h("h1",{text:t("lib")}), h("span",{class:"spacer"}),
       h("button",{class:"btn",onclick:()=>$("#filein").click()}, t("importFile")),
       h("button",{class:"btn primary",onclick:()=>go({name:"edit",id:null})}, "+ "+t("newText"))),
-    due.length ? h("section",{class:"section"}, h("h2",null, t("due")+" · "+due.length), h("div",{class:"cards"}, due.map(textCard))) : null,
-    h("section",{class:"section"}, h("h2",null, t("allTexts")+" · "+texts.length),
-      h("div",{class:"cards"}, texts.length ? texts.map(textCard) : textCard(SAMPLE)),
+    due.length ? h("section",{class:"section",style:"margin-top:0;margin-bottom:22px"}, h("h2",null, t("due")+" · "+due.length), h("div",{class:"cards"}, due.map(textCard))) : null,
+    texts.length ? renderFilters(texts) : null,
+    h("section",{class:"section",style:"margin-top:12px"},
+      h("div",{class:"listhead"}, h("h2",null, listTitle+" · "+shown.length), h("span",{class:"spacer"}), texts.length > 1 ? sortSel : null),
+      texts.length
+        ? (shown.length ? h("div",{class:"cards"}, shown.map(textCard)) : h("p",{class:"muted",text:t("noMatch")}))
+        : h("div",{class:"cards"}, textCard(SAMPLE)),
       drop)
   );
   ["dragenter","dragover"].forEach(ev => wrap.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("hover"); }));
@@ -562,6 +668,8 @@ function renderLibrary(){
   wrap.addEventListener("drop", e => importFiles(e.dataTransfer.files));
   return wrap;
 }
+// new texts land in the category being viewed
+const currentCat = () => filter.cat && filter.cat !== "all" ? filter.cat : "";
 
 /* ---------- import ---------- */
 function loadScript(src){
@@ -638,7 +746,7 @@ async function importFiles(files){
       let txt = (await readFileText(f)).replace(/\r\n?/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
       if (/\.md$|\.markdown$/i.test(f.name)) txt = txt.replace(/^#{1,6}\s+/gm,"").replace(/\*\*|__|`/g,"");
       if (!txt) continue;
-      last = newText(f.name.replace(/\.[^.]+$/,""), txt); putText(last); n++; pdf = isPdf(f);
+      last = {...newText(f.name.replace(/\.[^.]+$/,""), txt), cat:currentCat()}; putText(last); n++; pdf = isPdf(f);
     } catch (e){ console.error(e); toast(e && e.pdfEmpty ? t("pdfEmpty") : isPdf(f) ? t("pdfFail") : t("docxFail")); }
   }
   if (!n) return;
@@ -658,6 +766,8 @@ function renderEdit(){
   const count = h("span",{class:"small muted",text:body.value.length+" "+t("chars")});
   body.addEventListener("input", () => { count.textContent = body.value.length+" "+t("chars"); if (!x && body.value.length > 20 && !lang.dataset.touched) lang.value = guessLang(body.value); });
   lang.addEventListener("change", () => lang.dataset.touched = "1");
+  const cat = h("input",{class:"input",id:"ed-cat",list:"ed-cats",autocomplete:"off",placeholder:t("catHint"),value:x ? (x.cat||"") : currentCat()});
+  const catList = h("datalist",{id:"ed-cats"}, allCats().map(c => h("option",{value:c})));
   let armed = false;
   const del = x && h("button",{class:"btn danger",onclick:() => {
     if (!armed){ armed = true; del.textContent = t("confirmDel"); del.classList.add("armed"); setTimeout(()=>{ armed=false; del.textContent=t("del"); del.classList.remove("armed"); }, 3000); return; }
@@ -666,14 +776,17 @@ function renderEdit(){
   const save = () => {
     const content = body.value.replace(/\r\n?/g,"\n").trim();
     if (!content){ toast(t("needContent")); return; }
-    const y = x ? {...x, title:title.value.trim()||t("emptyTitle"), lang:lang.value, content:content.normalize("NFC")} : newText(title.value.trim(), content, lang.value);
+    const c = cat.value.trim();
+    const y = x ? {...x, title:title.value.trim()||t("emptyTitle"), lang:lang.value, content:content.normalize("NFC"), cat:c} : {...newText(title.value.trim(), content, lang.value), cat:c};
+    if (c && !(state.settings.cats||[]).includes(c)) saveCats(allCats().concat(c));
     putText(y); toast(t("saved")); go({name:"library"});
   };
   return h("div",{class:"stack"},
     h("div",{class:"row"}, h("button",{class:"btn ghost",onclick:()=>go({name:"library"})}, "← "+t("back")), h("h1",{text:x ? t("edit") : t("newText")})),
     h("div",{class:"row",style:"align-items:flex-end"},
       h("div",{class:"field",style:"flex:3;min-width:200px"}, h("label",{for:"ed-title",text:t("title")}), title),
-      h("div",{class:"field",style:"flex:1;min-width:130px"}, h("label",{for:"ed-lang",text:t("language")}), lang)),
+      h("div",{class:"field",style:"flex:1;min-width:130px"}, h("label",{for:"ed-lang",text:t("language")}), lang),
+      h("div",{class:"field",style:"flex:1.4;min-width:160px"}, h("label",{for:"ed-cat",text:t("category")}), cat, catList)),
     h("div",{class:"field"}, h("label",{for:"ed-body",text:t("content")}), body, count),
     h("div",{class:"row"}, h("button",{class:"btn primary",onclick:save}, t("save")), h("button",{class:"btn",onclick:()=>go({name:"library"})}, t("cancel")), h("span",{class:"spacer"}), del)
   );
